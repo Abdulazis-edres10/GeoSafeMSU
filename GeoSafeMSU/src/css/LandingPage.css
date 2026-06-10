@@ -1,0 +1,153 @@
+.landing-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #0f1929;
+}
+
+/* ── Header ─────────────────────────────────────────── */
+.header {
+  background-color: #AE2448;
+  padding: 0 32px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+}
+
+.header-inner {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.shield-logo {
+  background-color: white;
+  width: 40px;
+  height: 40px;
+  padding: 6px;
+  border-radius: 8px;
+  object-fit: contain;
+}
+
+.brand-title {
+  color: white;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.brand-sub {
+  color: rgba(255,255,255,0.7);
+  font-size: 11px;
+  margin-top: 3px;
+}
+
+.button-group {
+  display: flex;
+  gap: 10px;
+}
+
+/* ── Hero ────────────────────────────────────────────── */
+.hero-section {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 32px;
+  background: linear-gradient(135deg, #0f1929 0%, #1a1035 50%, #2C3E6B 100%);
+  text-align: center;
+}
+
+.hero-content {
+  max-width: 680px;
+}
+
+.hero-title {
+  color: white;
+  font-size: 52px;
+  font-weight: 800;
+  line-height: 1.15;
+  margin-bottom: 20px;
+  letter-spacing: -1px;
+}
+
+.hero-desc {
+  color: rgba(255,255,255,0.72);
+  font-size: 17px;
+  line-height: 1.7;
+  margin-bottom: 36px;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* ── Features ────────────────────────────────────────── */
+.features-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 24px;
+  padding: 48px 32px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.feature-card {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 28px 24px;
+  text-align: center;
+  color: white;
+  transition: background 0.2s;
+}
+
+.feature-card:hover {
+  background: rgba(174, 36, 72, 0.15);
+  border-color: rgba(174, 36, 72, 0.4);
+}
+
+.feature-icon {
+  font-size: 36px;
+  margin-bottom: 12px;
+}
+
+.feature-card h3 {
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.feature-card p {
+  color: rgba(255,255,255,0.6);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* ── Footer ──────────────────────────────────────────── */
+.landing-footer {
+  background: rgba(0,0,0,0.3);
+  padding: 16px 32px;
+  text-align: center;
+}
+
+.landing-footer p {
+  color: rgba(255,255,255,0.4);
+  font-size: 12px;
+  margin: 0;
+}

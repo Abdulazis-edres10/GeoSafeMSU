@@ -1,0 +1,212 @@
+/* ===== GeoSafe MSU — Login ===== */
+
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 24px;
+  background: linear-gradient(135deg, #2C3E6B 0%, #AE2448 100%);
+}
+
+.login-card {
+  display: flex;
+  width: 100%;
+  max-width: 920px;
+  min-height: 560px;
+  background: #ffffff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
+}
+
+/* ----- Branding panel (left) ----- */
+.login-brand {
+  position: relative;
+  flex: 1 1 45%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 40px;
+  background: linear-gradient(160deg, #AE2448 0%, #7c1733 100%);
+  color: #fff;
+  text-align: center;
+  overflow: hidden;
+}
+
+.login-brand-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.12) 0%, transparent 45%),
+    radial-gradient(circle at 80% 90%, rgba(0, 0, 0, 0.22) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.login-brand-content {
+  position: relative;
+  z-index: 1;
+}
+
+.login-brand-logo {
+  width: 96px;
+  height: 96px;
+  object-fit: contain;
+  margin-bottom: 20px;
+  filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.35));
+}
+
+.login-brand-content h1 {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.login-brand-sub {
+  margin: 8px 0 0;
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.login-brand-divider {
+  width: 56px;
+  height: 3px;
+  margin: 24px auto;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 2px;
+}
+
+.login-brand-org {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.7;
+  opacity: 0.85;
+}
+
+/* ----- Form panel (right) ----- */
+.login-form-panel {
+  flex: 1 1 55%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 44px;
+}
+
+.login-form-inner {
+  width: 100%;
+  max-width: 360px;
+}
+
+.login-title {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 700;
+  color: #1f2a44;
+}
+
+.login-subtitle {
+  margin: 6px 0 28px;
+  font-size: 14px;
+  color: #8a93a6;
+}
+
+.login-input-icon {
+  color: #b0b6c3;
+}
+
+.login-form-panel .ant-form-item-label > label {
+  font-weight: 600;
+  color: #4a5168;
+}
+
+.login-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.login-submit-btn {
+  height: 46px;
+  font-size: 15px;
+  font-weight: 600;
+  background: #AE2448;
+  border: none;
+  box-shadow: 0 6px 16px rgba(174, 36, 72, 0.35);
+}
+
+.login-submit-btn:hover {
+  background: #97203e !important;
+}
+
+.login-back-btn {
+  color: #8a93a6;
+}
+
+.login-back-btn:hover {
+  color: #AE2448 !important;
+  background: transparent !important;
+}
+
+/* ----- Demo accounts ----- */
+.login-demo {
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid #eef0f4;
+}
+
+.login-demo-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #aab0be;
+  margin-bottom: 10px;
+}
+
+.login-demo-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.login-demo-grid span {
+  font-size: 12px;
+  color: #7a8298;
+}
+
+.login-demo-grid strong {
+  display: inline-block;
+  min-width: 56px;
+  color: #4a5168;
+}
+
+/* ----- Responsive ----- */
+@media (max-width: 760px) {
+  .login-card {
+    flex-direction: column;
+    max-width: 440px;
+    min-height: 0;
+  }
+
+  .login-brand {
+    padding: 36px 32px;
+  }
+
+  .login-brand-logo {
+    width: 72px;
+    height: 72px;
+    margin-bottom: 14px;
+  }
+
+  .login-brand-divider,
+  .login-brand-org {
+    display: none;
+  }
+
+  .login-form-panel {
+    padding: 36px 28px;
+  }
+}

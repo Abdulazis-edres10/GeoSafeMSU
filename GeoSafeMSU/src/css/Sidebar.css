@@ -1,0 +1,110 @@
+.sidebar {
+  width: 240px;
+  min-height: 100vh;
+  background-color: #2C3E6B;
+  display: flex;
+  flex-direction: column;
+  transition: width 0.2s ease;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.sidebar.collapsed {
+  width: 80px;
+}
+
+.sidebar-logo {
+  padding: 16px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background-color: #1e2d52;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  overflow: hidden;
+}
+
+.sidebar-logo img {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: white;
+  padding: 4px;
+  flex-shrink: 0;
+}
+
+.sidebar-logo-text {
+  color: white;
+  font-weight: 700;
+  font-size: 13px;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.sidebar-logo-text span {
+  display: block;
+  font-weight: 400;
+  font-size: 11px;
+  color: rgba(255,255,255,0.6);
+  margin-top: 2px;
+}
+
+.sidebar-menu-wrapper {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-top: 8px;
+}
+
+.sidebar-toggle {
+  padding: 12px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+
+.sidebar-toggle button {
+  width: 100%;
+  background: rgba(255,255,255,0.08);
+  border: none;
+  color: rgba(255,255,255,0.7);
+  padding: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.sidebar-toggle button:hover {
+  background: rgba(255,255,255,0.15);
+}
+
+/* Ant Design Menu overrides for dark sidebar */
+.sidebar .ant-menu {
+  background: transparent !important;
+  border-inline-end: none !important;
+  color: #c8d0e7;
+}
+
+.sidebar .ant-menu-item {
+  color: #c8d0e7 !important;
+  border-radius: 0 !important;
+  margin: 2px 8px !important;
+  border-radius: 6px !important;
+}
+
+.sidebar .ant-menu-item:hover {
+  background-color: rgba(174, 36, 72, 0.25) !important;
+  color: #ffffff !important;
+}
+
+.sidebar .ant-menu-item-selected {
+  background-color: #AE2448 !important;
+  color: #ffffff !important;
+}
+
+.sidebar .ant-menu-item .anticon {
+  color: inherit !important;
+}
+
+.sidebar .ant-menu-inline-collapsed > .ant-menu-item {
+  padding-inline: calc(50% - 16px) !important;
+}
