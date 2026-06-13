@@ -9,7 +9,7 @@ const STATUS_COLORS = {
   'Pending': 'error',
 }
 
-function IncidentTable({ incidents = [], onEdit, onDelete, loading = false, canEdit = true }) {
+function IncidentTable({ incidents = [], onEdit, onDelete, loading = false }) {
   const [search, setSearch] = useState('')
 
   const filtered = incidents.filter(i => {
@@ -80,7 +80,7 @@ function IncidentTable({ incidents = [], onEdit, onDelete, loading = false, canE
       ellipsis: true,
       render: text => text.length > 80 ? text.substring(0, 80) + '…' : text,
     },
-    ...(canEdit ? [{
+    {
       title: 'Actions',
       key: 'actions',
       width: 110,
@@ -104,7 +104,7 @@ function IncidentTable({ incidents = [], onEdit, onDelete, loading = false, canE
           </Popconfirm>
         </Space>
       ),
-    }] : []),
+    },
   ]
 
   return (

@@ -1,4 +1,4 @@
-import { INCIDENTS, USERS, CRIME_TYPES, ZONES } from '../data/mockData'
+import { INCIDENTS, USERS, CRIME_TYPES, ZONES, saveCrimeTypes, saveZones } from '../data/mockData'
 
 const delay = (ms = 300) => new Promise(res => setTimeout(res, ms))
 
@@ -76,8 +76,77 @@ export async function getCrimeTypes() {
   return [...CRIME_TYPES]
 }
 
+// POST /api/crime-types
+export async function createCrimeType(data) {
+  await delay()
+  const maxNum = CRIME_TYPES.reduce((max, c) => {
+    const n = parseInt(c.crimeTypeID.replace('CT', ''), 10)
+    return Number.isNaN(n) ? max : Math.max(max, n)
+  }, 0)
+  const newType = {
+    crimeTypeID: `CT${String(maxNum + 1).padStart(3, '0')}`,
+    typeName: data.typeName.trim(),
+    description: data.description?.trim() ?? '',
+  }
+  CRIME_TYPES.push(newType)
+  saveCrimeTypes()
+  return newType
+}
+
+// DELETE /api/crime-types/:id
+export async function deleteCrimeType(id) {
+  await delay()
+  // Guard: don't orphan incidents that reference this crime type.
+  if (INCIDENTS.some(i => i.crimeTypeID === id)) {
+    const err = new Error('Crime type is in use by existing incidents.')
+    err.code = 'IN_USE'
+    throw err
+  }
+  const idx = CRIME_TYPES.findIndex(c => c.crimeTypeID === id)
+  if (idx !== -1) {
+    CRIME_TYPES.splice(idx, 1)
+    saveCrimeTypes()
+  }
+  return { success: true }
+}
+
 // GET /api/zones
 export async function getZones() {
   await delay()
   return [...ZONES]
+}
+
+// POST /api/zones
+export async function createZone(data) {
+  await delay()
+  const maxNum = ZONES.reduce((max, z) => {
+    const n = parseInt(z.locationID.replace('Z', ''), 10)
+    return Number.isNaN(n) ? max : Math.max(max, n)
+  }, 0)
+  const newZone = {
+    locationID: `Z${String(maxNum + 1).padStart(3, '0')}`,
+    campusZoneName: data.campusZoneName.trim(),
+    description: data.description?.trim() ?? '',
+    boundaryCoordinates: data.boundaryCoordinates,
+  }
+  ZONES.push(newZone)
+  saveZones()
+  return newZone
+}
+
+// DELETE /api/zones/:id
+export async function deleteZone(id) {
+  await delay()
+  // Guard: don't orphan incidents that reference this zone.
+  if (INCIDENTS.some(i => i.locationID === id)) {
+    const err = new Error('Zone is in use by existing incidents.')
+    err.code = 'IN_USE'
+    throw err
+  }
+  const idx = ZONES.findIndex(z => z.locationID === id)
+  if (idx !== -1) {
+    ZONES.splice(idx, 1)
+    saveZones()
+  }
+  return { success: true }
 }

@@ -11,10 +11,9 @@ const { Title } = Typography
 const ROLE_OPTIONS = [
   { value: 'admin', label: 'Admin' },
   { value: 'officer', label: 'Security Officer' },
-  { value: 'guest', label: 'Guest (View-Only)' },
 ]
 
-const ROLE_COLORS = { admin: 'red', officer: 'blue', guest: 'green' }
+const ROLE_COLORS = { admin: 'red', officer: 'blue' }
 
 function AdminPage() {
   const [users, setUsers] = useState([])

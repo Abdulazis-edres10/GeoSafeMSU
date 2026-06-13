@@ -7,6 +7,8 @@ import {
   FileTextOutlined,
   BarChartOutlined,
   TeamOutlined,
+  TagsOutlined,
+  ApartmentOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
 } from '@ant-design/icons'
@@ -17,7 +19,9 @@ import '../css/Sidebar.css'
 const ALL_ITEMS = [
   { key: '/dashboard', icon: <DashboardOutlined />, label: 'Dashboard', roles: ['admin', 'officer'] },
   { key: '/map', icon: <EnvironmentOutlined />, label: 'Crime Map', roles: ['admin', 'officer'] },
+  { key: '/zones', icon: <ApartmentOutlined />, label: 'Campus Zones', roles: ['admin', 'officer'] },
   { key: '/incidents', icon: <FileTextOutlined />, label: 'Incidents', roles: ['admin', 'officer'] },
+  { key: '/crime-types', icon: <TagsOutlined />, label: 'Crime Types', roles: ['admin', 'officer'] },
   { key: '/analytics', icon: <BarChartOutlined />, label: 'Analytics', roles: ['admin', 'officer'] },
   { key: '/admin', icon: <TeamOutlined />, label: 'User Management', roles: ['admin'] },
 ]

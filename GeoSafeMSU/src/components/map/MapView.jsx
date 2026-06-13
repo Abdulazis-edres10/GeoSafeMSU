@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import L from 'leaflet'
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png'
 import markerIcon from 'leaflet/dist/images/marker-icon.png'
@@ -10,7 +11,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl: markerShadow,
 })
 
-import { MapContainer, TileLayer, Polygon, Tooltip } from 'react-leaflet'
+import { MapContainer, TileLayer, Polygon, Tooltip, useMap } from 'react-leaflet'
 import IncidentMarker from './IncidentMarker'
 import HeatmapLayer from './HeatmapLayer'
 import { ZONES } from '../../data/mockData'
@@ -20,7 +21,32 @@ import '../../css/MapView.css'
 const MSU_CENTER = [7.99688, 124.26149]
 const DEFAULT_ZOOM = 17
 
-function MapView({ incidents = [], showHeatmap = false, showZones = true, onMarkerClick, className = 'map-container' }) {
+// Imperatively pans/zooms the map to a set of bounds whenever focusKey changes.
+function MapFocuser({ bounds, focusKey }) {
+  const map = useMap()
+  useEffect(() => {
+    if (bounds && bounds.length) {
+      map.fitBounds(bounds, { padding: [40, 40], maxZoom: 18, animate: true })
+    }
+    // Only re-fit when the focus target changes, not on every render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [focusKey])
+  return null
+}
+
+function MapView({
+  incidents = [],
+  showHeatmap = false,
+  showZones = true,
+  onMarkerClick,
+  onZoneClick,
+  highlightZoneId = null,
+  focusBounds = null,
+  focusKey = null,
+  className = 'map-container',
+  heatmapRadius = 28,
+  heatmapBlur = 18,
+}) {
   return (
     <MapContainer
       center={MSU_CENTER}
@@ -32,17 +58,23 @@ function MapView({ incidents = [], showHeatmap = false, showZones = true, onMark
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      {showZones && ZONES.map(zone => (
-        <Polygon
-          key={zone.locationID}
-          positions={zone.boundaryCoordinates}
-          pathOptions={{ color: '#2C3E6B', weight: 1.5, fillColor: '#2C3E6B', fillOpacity: 0.06 }}
-        >
-          <Tooltip direction="center" permanent className="zone-label">
-            {zone.campusZoneName}
-          </Tooltip>
-        </Polygon>
-      ))}
+      {showZones && ZONES.map(zone => {
+        const isHighlighted = zone.locationID === highlightZoneId
+        return (
+          <Polygon
+            key={zone.locationID}
+            positions={zone.boundaryCoordinates}
+            pathOptions={isHighlighted
+              ? { color: '#AE2448', weight: 3, fillColor: '#AE2448', fillOpacity: 0.25 }
+              : { color: '#2C3E6B', weight: 1.5, fillColor: '#2C3E6B', fillOpacity: 0.06 }}
+            eventHandlers={onZoneClick ? { click: () => onZoneClick(zone.locationID) } : undefined}
+          >
+            <Tooltip direction="center" permanent className="zone-label">
+              {zone.campusZoneName}
+            </Tooltip>
+          </Polygon>
+        )
+      })}
       {incidents.map(incident => (
         <IncidentMarker
           key={incident.incidentID}
@@ -50,7 +82,8 @@ function MapView({ incidents = [], showHeatmap = false, showZones = true, onMark
           onClick={onMarkerClick}
         />
       ))}
-      {showHeatmap && <HeatmapLayer incidents={incidents} />}
+      {showHeatmap && <HeatmapLayer incidents={incidents} radius={heatmapRadius} blur={heatmapBlur} />}
+      {focusBounds && <MapFocuser bounds={focusBounds} focusKey={focusKey} />}
     </MapContainer>
   )
 }

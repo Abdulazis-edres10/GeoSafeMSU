@@ -8,12 +8,14 @@ import '../css/MainLayout.css'
 const BREADCRUMB_MAP = {
   '/dashboard': ['Home', 'Dashboard'],
   '/map': ['Home', 'Crime Map'],
+  '/zones': ['Home', 'Campus Zones'],
   '/incidents': ['Home', 'Incidents'],
+  '/crime-types': ['Home', 'Crime Types'],
   '/analytics': ['Home', 'Analytics'],
   '/admin': ['Home', 'User Management'],
 }
 
-const ROLE_COLORS = { admin: 'red', officer: 'blue', guest: 'green' }
+const ROLE_COLORS = { admin: 'red', officer: 'blue' }
 
 function MainLayout({ children }) {
   const { pathname } = useLocation()

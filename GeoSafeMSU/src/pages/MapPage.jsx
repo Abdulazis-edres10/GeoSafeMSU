@@ -1,16 +1,25 @@
 import { useState, useEffect } from 'react'
-import { Switch, Spin, Typography, Space } from 'antd'
+import { Switch, Spin, Typography, Space, Segmented } from 'antd'
 import { EnvironmentOutlined } from '@ant-design/icons'
 import MapView from '../components/map/MapView'
 import MapFilters from '../components/map/MapFilters'
+import HeatmapLegend from '../components/map/HeatmapLegend'
 import { getIncidents } from '../services/api'
 
 const { Title } = Typography
+
+// Heatmap intensity presets — drive the leaflet.heat radius/blur.
+const INTENSITY = {
+  Low: { radius: 18, blur: 14 },
+  Medium: { radius: 28, blur: 18 },
+  High: { radius: 42, blur: 24 },
+}
 
 function MapPage() {
   const [incidents, setIncidents] = useState([])
   const [loading, setLoading] = useState(true)
   const [showHeatmap, setShowHeatmap] = useState(false)
+  const [intensity, setIntensity] = useState('Medium')
   const [filters, setFilters] = useState({ crimeTypeID: null, locationID: null, dateRange: null })
 
   useEffect(() => {
@@ -21,9 +30,11 @@ function MapPage() {
     })
   }, [filters])
 
+  const { radius, blur } = INTENSITY[intensity]
+
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, flexWrap: 'wrap', gap: 12 }}>
         <Title level={3} style={{ margin: 0, color: '#AE2448' }}>
           <EnvironmentOutlined style={{ marginRight: 8 }} />
           Crime Map — MSU Main Campus
@@ -39,6 +50,14 @@ function MapPage() {
             onChange={setShowHeatmap}
             style={{ background: showHeatmap ? '#AE2448' : undefined }}
           />
+          {showHeatmap && (
+            <Segmented
+              size="small"
+              options={['Low', 'Medium', 'High']}
+              value={intensity}
+              onChange={setIntensity}
+            />
+          )}
         </Space>
       </div>
 
@@ -49,7 +68,15 @@ function MapPage() {
           <Spin size="large" tip="Loading incidents…" />
         </div>
       ) : (
-        <MapView incidents={incidents} showHeatmap={showHeatmap} />
+        <div style={{ position: 'relative' }}>
+          <MapView
+            incidents={incidents}
+            showHeatmap={showHeatmap}
+            heatmapRadius={radius}
+            heatmapBlur={blur}
+          />
+          {showHeatmap && <HeatmapLegend />}
+        </div>
       )}
     </div>
   )

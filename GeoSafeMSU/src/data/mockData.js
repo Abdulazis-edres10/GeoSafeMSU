@@ -3,8 +3,6 @@ export const USERS = [
   { userID: 'U002', name: 'Admin Two', username: 'admin2', password: 'admin456', role: 'admin' },
   { userID: 'U003', name: 'Officer Santos', username: 'officer1', password: 'officer123', role: 'officer' },
   { userID: 'U004', name: 'Officer Macarambon', username: 'officer2', password: 'officer456', role: 'officer' },
-  { userID: 'U005', name: 'Guest Viewer', username: 'guest1', password: 'guest123', role: 'guest' },
-  { userID: 'U006', name: 'Guest User', username: 'guest2', password: 'guest456', role: 'guest' },
 ]
 
 // Campus center (real MSU Main Campus, Marawi): 7.99688 N, 124.26149 E.
@@ -13,34 +11,66 @@ export const ZONES = [
   {
     locationID: 'Z001',
     campusZoneName: 'Main Gate Area',
+    description: 'The primary entrance and exit checkpoint of the campus, monitored by security personnel controlling vehicle and pedestrian access.',
     boundaryCoordinates: [[7.99500,124.26170],[7.99500,124.26290],[7.99400,124.26290],[7.99400,124.26170]],
   },
   {
     locationID: 'Z002',
     campusZoneName: 'College of Engineering',
+    description: 'Academic complex housing engineering classrooms, laboratories, and faculty offices. High foot traffic during class hours.',
     boundaryCoordinates: [[7.99830,124.25920],[7.99830,124.26040],[7.99730,124.26040],[7.99730,124.25920]],
   },
   {
     locationID: 'Z003',
     campusZoneName: 'College of Science',
+    description: 'Science department lecture halls and research laboratories, including chemistry, biology, and physics facilities.',
     boundaryCoordinates: [[7.99750,124.26320],[7.99750,124.26440],[7.99650,124.26440],[7.99650,124.26320]],
   },
   {
     locationID: 'Z004',
     campusZoneName: 'Administration Building',
+    description: 'Central hub for university offices, student records, the registrar, and administrative services.',
     boundaryCoordinates: [[7.99740,124.26090],[7.99740,124.26210],[7.99640,124.26210],[7.99640,124.26090]],
   },
   {
     locationID: 'Z005',
     campusZoneName: 'Dormitory Area',
+    description: 'On-campus residence halls for students. Subject to curfew hours and restricted overnight access.',
     boundaryCoordinates: [[7.99970,124.26260],[7.99970,124.26380],[7.99870,124.26380],[7.99870,124.26260]],
   },
   {
     locationID: 'Z006',
     campusZoneName: 'Sports Complex',
+    description: 'Athletic fields, courts, and a gymnasium used for physical education, training, and campus events.',
     boundaryCoordinates: [[8.00100,124.25940],[8.00100,124.26060],[8.00000,124.26060],[8.00000,124.25940]],
   },
 ]
+
+// --- Campus zone persistence --------------------------------------------
+// Zones are editable (officers/admins can add new ones), so the full list is
+// persisted to localStorage and re-hydrated in place on load — same pattern as
+// crime types, keeping the ZONES reference stable for direct importers.
+const ZONES_STORAGE_KEY = 'geosafe_zones'
+
+export function saveZones() {
+  try {
+    localStorage.setItem(ZONES_STORAGE_KEY, JSON.stringify(ZONES))
+  } catch {
+    // localStorage unavailable — keep in-memory only.
+  }
+}
+
+try {
+  const stored = localStorage.getItem(ZONES_STORAGE_KEY)
+  if (stored) {
+    const parsed = JSON.parse(stored)
+    if (Array.isArray(parsed) && parsed.length) {
+      ZONES.splice(0, ZONES.length, ...parsed)
+    }
+  }
+} catch {
+  // Corrupt storage — fall back to seed data above.
+}
 
 export const CRIME_TYPES = [
   { crimeTypeID: 'CT001', typeName: 'Theft', description: 'Unauthorized taking of property' },
@@ -50,6 +80,32 @@ export const CRIME_TYPES = [
   { crimeTypeID: 'CT005', typeName: 'Trespassing', description: 'Unauthorized entry to restricted areas' },
   { crimeTypeID: 'CT006', typeName: 'Drug-Related', description: 'Illegal substance possession or use' },
 ]
+
+// --- Crime type persistence ---------------------------------------------
+// Crime types are editable by admins/officers, so we persist the full list to
+// localStorage. On load we replace the seed contents in place (keeping the same
+// array reference) so modules that imported CRIME_TYPES directly stay in sync.
+const CRIME_TYPES_STORAGE_KEY = 'geosafe_crime_types'
+
+export function saveCrimeTypes() {
+  try {
+    localStorage.setItem(CRIME_TYPES_STORAGE_KEY, JSON.stringify(CRIME_TYPES))
+  } catch {
+    // localStorage unavailable (e.g. private mode) — keep in-memory only.
+  }
+}
+
+try {
+  const stored = localStorage.getItem(CRIME_TYPES_STORAGE_KEY)
+  if (stored) {
+    const parsed = JSON.parse(stored)
+    if (Array.isArray(parsed) && parsed.length) {
+      CRIME_TYPES.splice(0, CRIME_TYPES.length, ...parsed)
+    }
+  }
+} catch {
+  // Corrupt storage — fall back to seed data above.
+}
 
 // Each incident's lat/lng falls inside its labeled zone polygon above.
 export const INCIDENTS = [

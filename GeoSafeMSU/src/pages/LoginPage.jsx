@@ -21,11 +21,7 @@ function LoginPage() {
       setError(result.message)
       return
     }
-    if (result.role === 'guest') {
-      navigate('/guest', { replace: true })
-    } else {
-      navigate('/dashboard', { replace: true })
-    }
+    navigate('/dashboard', { replace: true })
   }
 
   return (
@@ -131,7 +127,6 @@ function LoginPage() {
               <div className="login-demo-grid">
                 <span><strong>Admin</strong> admin1 / admin123</span>
                 <span><strong>Officer</strong> officer1 / officer123</span>
-                <span><strong>Guest</strong> guest1 / guest123</span>
               </div>
             </div>
           </div>

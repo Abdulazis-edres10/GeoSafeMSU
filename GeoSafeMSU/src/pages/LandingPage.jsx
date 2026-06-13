@@ -1,6 +1,7 @@
 import 'antd/dist/reset.css'
 import '../css/LandingPage.css'
 import { Button } from 'antd'
+import { ArrowRightOutlined } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
 import shield from '../assets/shield.png'
 
@@ -9,22 +10,31 @@ function LandingPage() {
 
   return (
     <div className="landing-page">
-      <div className="header">
+      <header className="header">
         <div className="header-inner">
           <div className="header-brand">
-            <img src={shield} alt="GeoSafe MSU" className="shield-logo" />
-            <div>
-              <div className="brand-title">GeoSafe MSU</div>
-              <div className="brand-sub">Department of Security and Services · MSU Marawi</div>
+            <div className="brand-logo-wrap">
+              <img src={shield} alt="GeoSafe MSU" className="shield-logo" />
+            </div>
+            <div className="brand-text">
+              <div className="brand-title">
+                GeoSafe<span className="brand-title-accent">MSU</span>
+              </div>
+              <div className="brand-sub">Department of Security &amp; Services · MSU Marawi</div>
             </div>
           </div>
-          <div className="button-group">
-            <Button ghost onClick={() => navigate('/login')}>
+
+          <div className="header-actions">
+            <button className="header-guest-btn" onClick={() => navigate('/guest')}>
+              View as Guest
+            </button>
+            <button className="header-signin-btn" onClick={() => navigate('/login')}>
               Sign In
-            </Button>
+              <ArrowRightOutlined />
+            </button>
           </div>
         </div>
-      </div>
+      </header>
 
       <div className="hero-section">
         <div className="hero-content">

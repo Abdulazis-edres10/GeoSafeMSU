@@ -4,18 +4,14 @@ import { PlusOutlined, FileTextOutlined } from '@ant-design/icons'
 import IncidentTable from '../components/incidents/IncidentTable'
 import IncidentForm from '../components/incidents/IncidentForm'
 import { getIncidents, deleteIncident } from '../services/api'
-import { useAuth } from '../hooks/useAuth'
 
 const { Title } = Typography
 
 function IncidentPage() {
-  const { user } = useAuth()
   const [incidents, setIncidents] = useState([])
   const [loading, setLoading] = useState(true)
   const [modalOpen, setModalOpen] = useState(false)
   const [editingIncident, setEditingIncident] = useState(null)
-
-  const canEdit = user?.role !== 'guest'
 
   const loadIncidents = useCallback(async () => {
     setLoading(true)
@@ -61,16 +57,14 @@ function IncidentPage() {
           <FileTextOutlined style={{ marginRight: 8 }} />
           Incident Records
         </Title>
-        {canEdit && (
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            style={{ background: '#AE2448', border: 'none' }}
-            onClick={handleAdd}
-          >
-            Record New Incident
-          </Button>
-        )}
+        <Button
+          type="primary"
+          icon={<PlusOutlined />}
+          style={{ background: '#AE2448', border: 'none' }}
+          onClick={handleAdd}
+        >
+          Record New Incident
+        </Button>
       </div>
 
       <IncidentTable
@@ -78,7 +72,6 @@ function IncidentPage() {
         loading={loading}
         onEdit={handleEdit}
         onDelete={handleDelete}
-        canEdit={canEdit}
       />
 
       <Modal

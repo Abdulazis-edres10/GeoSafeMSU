@@ -11,6 +11,8 @@ import MapPage from './pages/MapPage'
 import IncidentPage from './pages/IncidentPage'
 import Analytics from './pages/Analytics'
 import AdminPage from './pages/AdminPage'
+import CrimeTypePage from './pages/CrimeTypePage'
+import CampusZonesPage from './pages/CampusZonesPage'
 import GuestDashboard from './pages/GuestDashboard'
 
 import ProtectedRoute from './components/ProtectedRoute'
@@ -90,6 +92,22 @@ function App() {
         element={
           <ProtectedRoute allowedRoles={['admin', 'officer']}>
             <MainLayout><Analytics /></MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/crime-types"
+        element={
+          <ProtectedRoute allowedRoles={['admin', 'officer']}>
+            <MainLayout><CrimeTypePage /></MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/zones"
+        element={
+          <ProtectedRoute allowedRoles={['admin', 'officer']}>
+            <MainLayout><CampusZonesPage /></MainLayout>
           </ProtectedRoute>
         }
       />
