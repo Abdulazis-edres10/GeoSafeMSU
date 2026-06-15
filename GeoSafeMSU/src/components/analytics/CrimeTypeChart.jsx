@@ -7,6 +7,30 @@ import { CRIME_TYPES } from '../../data/mockData'
 const COLORS = ['#AE2448', '#2C3E6B', '#27AE60', '#F39C12', '#E74C3C', '#aa3bff']
 const CHART_HEIGHT = 260
 
+const RADIAN = Math.PI / 180
+
+// Always-visible percentage label centered on each slice's band.
+function renderPercentLabel({ cx, cy, midAngle, innerRadius, outerRadius, percent }) {
+  if (percent < 0.04) return null // skip tiny slices to avoid clutter
+  const radius = innerRadius + (outerRadius - innerRadius) / 2
+  const x = cx + radius * Math.cos(-midAngle * RADIAN)
+  const y = cy + radius * Math.sin(-midAngle * RADIAN)
+  return (
+    <text
+      x={x}
+      y={y}
+      fill="#fff"
+      fontSize={12}
+      fontWeight={700}
+      textAnchor="middle"
+      dominantBaseline="central"
+      style={{ pointerEvents: 'none', textShadow: '0 1px 2px rgba(0,0,0,0.35)' }}
+    >
+      {(percent * 100).toFixed(1)}%
+    </text>
+  )
+}
+
 // Expanded sector + outer ring drawn for the slice currently hovered.
 function renderActiveShape(props) {
   const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill } = props
@@ -34,7 +58,7 @@ function renderActiveShape(props) {
 
 function TypeTooltip({ active, payload }) {
   if (!active || !payload?.length) return null
-  const { name, value, percent } = payload[0].payload
+  const { name, value, pct } = payload[0].payload
   return (
     <div style={{
       background: '#fff', border: '1px solid #e5e4e7', borderRadius: 8,
@@ -42,7 +66,7 @@ function TypeTooltip({ active, payload }) {
     }}>
       <div style={{ fontWeight: 700, color: '#2C3E6B' }}>{name}</div>
       <div style={{ color: '#AE2448', fontWeight: 600 }}>
-        {value} incident{value !== 1 ? 's' : ''} ({percent}%)
+        {value} incident{value !== 1 ? 's' : ''} ({pct}%)
       </div>
     </div>
   )
@@ -58,9 +82,10 @@ function CrimeTypeChart({ incidents = [] }) {
   const total = rawData.reduce((sum, d) => sum + d.value, 0)
 
   // Attach each slice's share of the total (rounded to one decimal).
+  // Named `pct` so it doesn't clash with Recharts' own `percent` (a 0–1 fraction).
   const data = rawData.map(d => ({
     ...d,
-    percent: total ? Math.round((d.value / total) * 1000) / 10 : 0,
+    pct: total ? Math.round((d.value / total) * 1000) / 10 : 0,
   }))
 
   return (
@@ -82,6 +107,8 @@ function CrimeTypeChart({ incidents = [] }) {
                   dataKey="value"
                   activeShape={renderActiveShape}
                   animationDuration={700}
+                  label={renderPercentLabel}
+                  labelLine={false}
                 >
                   {data.map((entry, i) => (
                     <Cell key={i} fill={entry.color} stroke="#fff" strokeWidth={2} />
@@ -116,7 +143,7 @@ function CrimeTypeChart({ incidents = [] }) {
                 <span style={{ width: 10, height: 10, borderRadius: '50%', background: d.color }} />
                 <span style={{ color: '#555' }}>{d.name}</span>
                 <strong style={{ color: '#2C3E6B' }}>{d.value}</strong>
-                <span style={{ color: '#AE2448', fontWeight: 600 }}>({d.percent}%)</span>
+                <span style={{ color: '#AE2448', fontWeight: 600 }}>({d.pct}%)</span>
               </span>
             ))}
           </div>
