@@ -34,7 +34,7 @@ function renderActiveShape(props) {
 
 function TypeTooltip({ active, payload }) {
   if (!active || !payload?.length) return null
-  const { name, value } = payload[0].payload
+  const { name, value, percent } = payload[0].payload
   return (
     <div style={{
       background: '#fff', border: '1px solid #e5e4e7', borderRadius: 8,
@@ -42,20 +42,26 @@ function TypeTooltip({ active, payload }) {
     }}>
       <div style={{ fontWeight: 700, color: '#2C3E6B' }}>{name}</div>
       <div style={{ color: '#AE2448', fontWeight: 600 }}>
-        {value} incident{value !== 1 ? 's' : ''}
+        {value} incident{value !== 1 ? 's' : ''} ({percent}%)
       </div>
     </div>
   )
 }
 
 function CrimeTypeChart({ incidents = [] }) {
-  const data = CRIME_TYPES.map((ct, i) => ({
+  const rawData = CRIME_TYPES.map((ct, i) => ({
     name: ct.typeName,
     value: incidents.filter(inc => inc.crimeTypeID === ct.crimeTypeID).length,
     color: COLORS[i % COLORS.length],
   })).filter(d => d.value > 0)
 
-  const total = data.reduce((sum, d) => sum + d.value, 0)
+  const total = rawData.reduce((sum, d) => sum + d.value, 0)
+
+  // Attach each slice's share of the total (rounded to one decimal).
+  const data = rawData.map(d => ({
+    ...d,
+    percent: total ? Math.round((d.value / total) * 1000) / 10 : 0,
+  }))
 
   return (
     <Card title="Incidents by Crime Type" style={{ height: '100%' }}>
@@ -110,6 +116,7 @@ function CrimeTypeChart({ incidents = [] }) {
                 <span style={{ width: 10, height: 10, borderRadius: '50%', background: d.color }} />
                 <span style={{ color: '#555' }}>{d.name}</span>
                 <strong style={{ color: '#2C3E6B' }}>{d.value}</strong>
+                <span style={{ color: '#AE2448', fontWeight: 600 }}>({d.percent}%)</span>
               </span>
             ))}
           </div>

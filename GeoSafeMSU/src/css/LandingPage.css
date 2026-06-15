@@ -10,8 +10,8 @@
   position: sticky;
   top: 0;
   z-index: 100;
-  padding: 0 32px;
-  height: 68px;
+  padding: 0 48px;
+  height: 80px;
   display: flex;
   align-items: center;
   background: rgba(15, 25, 41, 0.72);
@@ -116,23 +116,6 @@
   gap: 14px;
 }
 
-.header-guest-btn {
-  background: transparent;
-  border: none;
-  color: rgba(255, 255, 255, 0.75);
-  font-size: 14px;
-  font-weight: 500;
-  padding: 8px 12px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: color 0.18s ease, background 0.18s ease;
-}
-
-.header-guest-btn:hover {
-  color: #ffffff;
-  background: rgba(255, 255, 255, 0.07);
-}
-
 .header-signin-btn {
   display: inline-flex;
   align-items: center;
@@ -172,7 +155,6 @@
     padding: 0 16px;
     height: 60px;
   }
-  .header-guest-btn,
   .brand-sub {
     display: none;
   }

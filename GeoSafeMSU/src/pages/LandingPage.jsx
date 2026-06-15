@@ -25,9 +25,6 @@ function LandingPage() {
           </div>
 
           <div className="header-actions">
-            <button className="header-guest-btn" onClick={() => navigate('/guest')}>
-              View as Guest
-            </button>
             <button className="header-signin-btn" onClick={() => navigate('/login')}>
               Sign In
               <ArrowRightOutlined />
