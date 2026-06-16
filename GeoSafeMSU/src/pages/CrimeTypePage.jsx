@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback } from 'react'
 import {
   Table, Button, Modal, Form, Input, Tag,
-  Popconfirm, message, Typography,
+  message, Typography,
 } from 'antd'
-import { PlusOutlined, TagsOutlined, DeleteOutlined } from '@ant-design/icons'
-import { getCrimeTypes, createCrimeType, deleteCrimeType, getIncidents } from '../services/api'
+import { PlusOutlined, TagsOutlined } from '@ant-design/icons'
+import { getCrimeTypes, createCrimeType, getIncidents } from '../services/api'
 
 const { Title } = Typography
 
@@ -36,18 +36,6 @@ function CrimeTypePage() {
   const handleAdd = () => {
     form.resetFields()
     setModalOpen(true)
-  }
-
-  const handleDelete = async (id) => {
-    try {
-      await deleteCrimeType(id)
-      message.success('Crime type removed.')
-      load()
-    } catch (err) {
-      message.error(err.code === 'IN_USE'
-        ? 'Cannot remove — this crime type is used by existing incidents.'
-        : 'Failed to remove crime type.')
-    }
   }
 
   const handleSubmit = async (values) => {
@@ -86,34 +74,6 @@ function CrimeTypePage() {
       render: (_, record) => {
         const count = usage[record.crimeTypeID] ?? 0
         return <Tag color={count ? 'blue' : 'default'}>{count}</Tag>
-      },
-    },
-    {
-      title: 'Actions',
-      key: 'actions',
-      width: 110,
-      render: (_, record) => {
-        const inUse = (usage[record.crimeTypeID] ?? 0) > 0
-        return (
-          <Popconfirm
-            title="Remove this crime type?"
-            description="This action cannot be undone."
-            onConfirm={() => handleDelete(record.crimeTypeID)}
-            okText="Remove"
-            okButtonProps={{ danger: true }}
-            disabled={inUse}
-          >
-            <Button
-              icon={<DeleteOutlined />}
-              danger
-              size="small"
-              disabled={inUse}
-              title={inUse ? 'In use by existing incidents' : 'Remove crime type'}
-            >
-              Remove
-            </Button>
-          </Popconfirm>
-        )
       },
     },
   ]
