@@ -1,7 +1,6 @@
 import { Table, Input, Tag, Button, Popconfirm, Space } from 'antd'
 import { EditOutlined, InboxOutlined, UndoOutlined, SearchOutlined } from '@ant-design/icons'
 import { useState } from 'react'
-import { CRIME_TYPES, ZONES } from '../../data/mockData'
 
 const STATUS_COLORS = {
   'Resolved': 'success',
@@ -9,13 +8,13 @@ const STATUS_COLORS = {
   'Pending': 'error',
 }
 
-function IncidentTable({ incidents = [], onEdit, onArchive, onRestore, archivedView = false, loading = false }) {
+function IncidentTable({ incidents = [], crimeTypes = [], zones = [], onEdit, onArchive, onRestore, archivedView = false, loading = false }) {
   const [search, setSearch] = useState('')
 
   const filtered = incidents.filter(i => {
     if (!search) return true
     const term = search.toLowerCase()
-    const typeName = CRIME_TYPES.find(c => c.crimeTypeID === i.crimeTypeID)?.typeName ?? ''
+    const typeName = crimeTypes.find(c => c.crimeTypeID === i.crimeTypeID)?.typeName ?? ''
     return (
       i.incidentID.toLowerCase().includes(term) ||
       i.description.toLowerCase().includes(term) ||
@@ -49,8 +48,8 @@ function IncidentTable({ incidents = [], onEdit, onArchive, onRestore, archivedV
       dataIndex: 'crimeTypeID',
       key: 'crimeTypeID',
       width: 150,
-      render: id => CRIME_TYPES.find(c => c.crimeTypeID === id)?.typeName ?? '—',
-      filters: CRIME_TYPES.map(c => ({ text: c.typeName, value: c.crimeTypeID })),
+      render: id => crimeTypes.find(c => c.crimeTypeID === id)?.typeName ?? '—',
+      filters: crimeTypes.map(c => ({ text: c.typeName, value: c.crimeTypeID })),
       onFilter: (value, record) => record.crimeTypeID === value,
     },
     {
@@ -58,7 +57,7 @@ function IncidentTable({ incidents = [], onEdit, onArchive, onRestore, archivedV
       dataIndex: 'locationID',
       key: 'locationID',
       width: 180,
-      render: id => ZONES.find(z => z.locationID === id)?.campusZoneName ?? '—',
+      render: id => zones.find(z => z.locationID === id)?.campusZoneName ?? '—',
     },
     {
       title: 'Status',

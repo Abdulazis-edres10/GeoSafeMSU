@@ -3,12 +3,14 @@ import { Button, Modal, Typography, Segmented, message } from 'antd'
 import { PlusOutlined, FileTextOutlined, InboxOutlined, UnorderedListOutlined } from '@ant-design/icons'
 import IncidentTable from '../components/incidents/IncidentTable'
 import IncidentForm from '../components/incidents/IncidentForm'
-import { getIncidents, archiveIncident, unarchiveIncident } from '../services/api'
+import { getIncidents, archiveIncident, unarchiveIncident, getCrimeTypes, getZones } from '../services/api'
 
 const { Title } = Typography
 
 function IncidentPage() {
   const [incidents, setIncidents] = useState([])
+  const [crimeTypes, setCrimeTypes] = useState([])
+  const [zones, setZones] = useState([])
   const [loading, setLoading] = useState(true)
   const [modalOpen, setModalOpen] = useState(false)
   const [editingIncident, setEditingIncident] = useState(null)
@@ -25,6 +27,13 @@ function IncidentPage() {
   }, [view])
 
   useEffect(() => { loadIncidents() }, [loadIncidents])
+
+  // Crime types and zones are needed to show names in the table. They don't
+  // depend on the active/archived view, so we fetch them once on mount.
+  useEffect(() => {
+    getCrimeTypes().then(setCrimeTypes).catch(() => {})
+    getZones().then(setZones).catch(() => {})
+  }, [])
 
   const handleAdd = () => {
     setEditingIncident(null)
@@ -90,6 +99,8 @@ function IncidentPage() {
 
       <IncidentTable
         incidents={incidents}
+        crimeTypes={crimeTypes}
+        zones={zones}
         loading={loading}
         archivedView={view === 'archived'}
         onEdit={handleEdit}
