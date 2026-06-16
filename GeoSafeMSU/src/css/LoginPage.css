@@ -6,7 +6,7 @@
   justify-content: center;
   align-items: center;
   padding: 24px;
-  background: linear-gradient(135deg, #0f1929 0%, #1a1035 50%, #2C3E6B 100%);
+  background: linear-gradient(135deg, #0f1929 0%, #1a1035 50%, #2c3e6b 100%);
 }
 
 .login-card {
@@ -28,7 +28,7 @@
   align-items: center;
   justify-content: center;
   padding: 48px 40px;
-  background: linear-gradient(160deg, #AE2448 0%, #7c1733 100%);
+  background: linear-gradient(135deg, #0f1929 0%, #1a1035 50%, #2c3e6b 100%);
   color: #fff;
   text-align: center;
   overflow: hidden;
@@ -38,7 +38,11 @@
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.12) 0%, transparent 45%),
+    radial-gradient(
+      circle at 20% 20%,
+      rgba(255, 255, 255, 0.12) 0%,
+      transparent 45%
+    ),
     radial-gradient(circle at 80% 90%, rgba(0, 0, 0, 0.22) 0%, transparent 50%);
   pointer-events: none;
 }
@@ -131,7 +135,7 @@
   height: 46px;
   font-size: 15px;
   font-weight: 600;
-  background: #AE2448;
+  background: #ae2448;
   border: none;
   box-shadow: 0 6px 16px rgba(174, 36, 72, 0.35);
 }
@@ -145,7 +149,7 @@
 }
 
 .login-back-btn:hover {
-  color: #AE2448 !important;
+  color: #ae2448 !important;
   background: transparent !important;
 }
 

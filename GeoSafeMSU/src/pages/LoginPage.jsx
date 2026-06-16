@@ -1,28 +1,32 @@
-import { Button, Checkbox, Form, Input, Alert } from 'antd'
-import { UserOutlined, LockOutlined, ArrowLeftOutlined } from '@ant-design/icons'
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../hooks/useAuth'
-import shield from '../assets/shield.png'
-import '../css/LoginPage.css'
+import { Button, Checkbox, Form, Input, Alert } from "antd";
+import {
+  UserOutlined,
+  LockOutlined,
+  ArrowLeftOutlined,
+} from "@ant-design/icons";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
+import shield from "../assets/shieldWhite.png";
+import "../css/LoginPage.css";
 
 function LoginPage() {
-  const { login } = useAuth()
-  const navigate = useNavigate()
-  const [error, setError] = useState(null)
-  const [loading, setLoading] = useState(false)
+  const { login } = useAuth();
+  const navigate = useNavigate();
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const onFinish = ({ username, password }) => {
-    setLoading(true)
-    setError(null)
-    const result = login(username, password)
-    setLoading(false)
+    setLoading(true);
+    setError(null);
+    const result = login(username, password);
+    setLoading(false);
     if (!result.success) {
-      setError(result.message)
-      return
+      setError(result.message);
+      return;
     }
-    navigate('/dashboard', { replace: true })
-  }
+    navigate("/dashboard", { replace: true });
+  };
 
   return (
     <div className="login-page">
@@ -31,12 +35,19 @@ function LoginPage() {
         <div className="login-brand">
           <div className="login-brand-overlay" />
           <div className="login-brand-content">
-            <img src={shield} alt="GeoSafe MSU shield" className="login-brand-logo" />
+            <img
+              src={shield}
+              alt="GeoSafe MSU shield"
+              className="login-brand-logo"
+            />
             <h1>GeoSafe MSU</h1>
-            <p className="login-brand-sub">Geospatial Crime Monitoring Platform</p>
+            <p className="login-brand-sub">
+              Geospatial Crime Monitoring Platform
+            </p>
             <div className="login-brand-divider" />
             <p className="login-brand-org">
-              Department of Security and Services<br />
+              Department of Security and Services
+              <br />
               Mindanao State University — Marawi Campus
             </p>
           </div>
@@ -46,14 +57,16 @@ function LoginPage() {
         <div className="login-form-panel">
           <div className="login-form-inner">
             <h2 className="login-title">Welcome back</h2>
-            <p className="login-subtitle">Sign in to access the GeoSafe MSU dashboard.</p>
+            <p className="login-subtitle">
+              Sign in to access the GeoSafe MSU dashboard.
+            </p>
 
             {error && (
               <Alert
                 message={error}
                 type="error"
                 showIcon
-                style={{ marginBottom: 20, textAlign: 'left' }}
+                style={{ marginBottom: 20, textAlign: "left" }}
                 closable
                 onClose={() => setError(null)}
               />
@@ -70,7 +83,9 @@ function LoginPage() {
               <Form.Item
                 label="Username"
                 name="username"
-                rules={[{ required: true, message: 'Please enter your username.' }]}
+                rules={[
+                  { required: true, message: "Please enter your username." },
+                ]}
               >
                 <Input
                   prefix={<UserOutlined className="login-input-icon" />}
@@ -82,7 +97,9 @@ function LoginPage() {
               <Form.Item
                 label="Password"
                 name="password"
-                rules={[{ required: true, message: 'Please enter your password.' }]}
+                rules={[
+                  { required: true, message: "Please enter your password." },
+                ]}
               >
                 <Input.Password
                   prefix={<LockOutlined className="login-input-icon" />}
@@ -115,7 +132,7 @@ function LoginPage() {
                 size="large"
                 block
                 icon={<ArrowLeftOutlined />}
-                onClick={() => navigate('/')}
+                onClick={() => navigate("/")}
                 className="login-back-btn"
               >
                 Back to Home
@@ -125,15 +142,19 @@ function LoginPage() {
             <div className="login-demo">
               <span className="login-demo-label">Demo accounts</span>
               <div className="login-demo-grid">
-                <span><strong>Admin</strong> admin1 / admin123</span>
-                <span><strong>Officer</strong> officer1 / officer123</span>
+                <span>
+                  <strong>Admin</strong> admin1 / admin123
+                </span>
+                <span>
+                  <strong>Officer</strong> officer1 / officer123
+                </span>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default LoginPage
+export default LoginPage;
