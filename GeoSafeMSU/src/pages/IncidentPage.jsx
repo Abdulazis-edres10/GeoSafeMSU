@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from 'react'
-import { Button, Modal, Typography, Space, message } from 'antd'
-import { PlusOutlined, FileTextOutlined } from '@ant-design/icons'
+import { Button, Modal, Typography, Segmented, message } from 'antd'
+import { PlusOutlined, FileTextOutlined, InboxOutlined, UnorderedListOutlined } from '@ant-design/icons'
 import IncidentTable from '../components/incidents/IncidentTable'
 import IncidentForm from '../components/incidents/IncidentForm'
-import { getIncidents, deleteIncident } from '../services/api'
+import { getIncidents, archiveIncident, unarchiveIncident } from '../services/api'
 
 const { Title } = Typography
 
@@ -12,16 +12,17 @@ function IncidentPage() {
   const [loading, setLoading] = useState(true)
   const [modalOpen, setModalOpen] = useState(false)
   const [editingIncident, setEditingIncident] = useState(null)
+  const [view, setView] = useState('active') // 'active' | 'archived'
 
   const loadIncidents = useCallback(async () => {
     setLoading(true)
     try {
-      const data = await getIncidents()
+      const data = await getIncidents(view === 'archived' ? { archivedOnly: true } : {})
       setIncidents(data)
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [view])
 
   useEffect(() => { loadIncidents() }, [loadIncidents])
 
@@ -35,13 +36,23 @@ function IncidentPage() {
     setModalOpen(true)
   }
 
-  const handleDelete = async (id) => {
+  const handleArchive = async (id) => {
     try {
-      await deleteIncident(id)
-      message.success('Incident deleted.')
+      await archiveIncident(id)
+      message.success('Incident archived. View it under "Archived".')
       loadIncidents()
     } catch {
-      message.error('Failed to delete incident.')
+      message.error('Failed to archive incident.')
+    }
+  }
+
+  const handleRestore = async (id) => {
+    try {
+      await unarchiveIncident(id)
+      message.success('Incident restored to active records.')
+      loadIncidents()
+    } catch {
+      message.error('Failed to restore incident.')
     }
   }
 
@@ -67,11 +78,23 @@ function IncidentPage() {
         </Button>
       </div>
 
+      <Segmented
+        value={view}
+        onChange={setView}
+        style={{ marginBottom: 16 }}
+        options={[
+          { label: 'Active', value: 'active', icon: <UnorderedListOutlined /> },
+          { label: 'Archived', value: 'archived', icon: <InboxOutlined /> },
+        ]}
+      />
+
       <IncidentTable
         incidents={incidents}
         loading={loading}
+        archivedView={view === 'archived'}
         onEdit={handleEdit}
-        onDelete={handleDelete}
+        onArchive={handleArchive}
+        onRestore={handleRestore}
       />
 
       <Modal

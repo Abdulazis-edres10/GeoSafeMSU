@@ -308,3 +308,29 @@ export const INCIDENTS = [
     reportingOfficer: 'U004',
   },
 ]
+
+// --- Incident persistence -----------------------------------------------
+// Incidents can be created, edited, and archived. We persist the full list to
+// localStorage (same in-place re-hydration pattern as zones/crime types) so the
+// records — including their archived state — survive a page refresh.
+const INCIDENTS_STORAGE_KEY = 'geosafe_incidents'
+
+export function saveIncidents() {
+  try {
+    localStorage.setItem(INCIDENTS_STORAGE_KEY, JSON.stringify(INCIDENTS))
+  } catch {
+    // localStorage unavailable — keep in-memory only.
+  }
+}
+
+try {
+  const stored = localStorage.getItem(INCIDENTS_STORAGE_KEY)
+  if (stored) {
+    const parsed = JSON.parse(stored)
+    if (Array.isArray(parsed) && parsed.length) {
+      INCIDENTS.splice(0, INCIDENTS.length, ...parsed)
+    }
+  }
+} catch {
+  // Corrupt storage — fall back to seed data above.
+}

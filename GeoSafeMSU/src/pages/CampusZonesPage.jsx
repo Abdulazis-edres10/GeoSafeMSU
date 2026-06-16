@@ -91,14 +91,15 @@ function CampusZonesPage() {
 
   const handleDelete = async (id) => {
     try {
-      await deleteZone(id)
-      message.success('Zone removed.')
+      const { archivedCount } = await deleteZone(id)
+      message.success(archivedCount > 0
+        ? `Zone removed. ${archivedCount} incident${archivedCount !== 1 ? 's' : ''} moved to the archive.`
+        : 'Zone removed.')
       if (selectedZoneId === id) setSelectedZoneId(null)
       await loadZones()
-    } catch (err) {
-      message.error(err.code === 'IN_USE'
-        ? 'Cannot remove — this zone has recorded incidents.'
-        : 'Failed to remove zone.')
+      getIncidents().then(setIncidents)
+    } catch {
+      message.error('Failed to remove zone.')
     }
   }
 
@@ -228,19 +229,19 @@ function CampusZonesPage() {
                   </div>
                   <Popconfirm
                     title="Remove this zone?"
-                    description="This action cannot be undone."
+                    description={count > 0
+                      ? `Its ${count} incident${count !== 1 ? 's' : ''} will be moved to the archive.`
+                      : 'This action cannot be undone.'}
                     onConfirm={() => handleDelete(zone.locationID)}
                     okText="Remove"
                     okButtonProps={{ danger: true }}
-                    disabled={count > 0}
                   >
                     <Button
                       type="text"
                       danger
                       size="small"
                       icon={<DeleteOutlined />}
-                      disabled={count > 0}
-                      title={count > 0 ? 'Has recorded incidents — cannot remove' : 'Remove zone'}
+                      title="Remove zone"
                       onClick={(e) => e.stopPropagation()}
                     />
                   </Popconfirm>

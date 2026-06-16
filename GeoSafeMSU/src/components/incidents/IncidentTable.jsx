@@ -1,5 +1,5 @@
 import { Table, Input, Tag, Button, Popconfirm, Space } from 'antd'
-import { EditOutlined, DeleteOutlined, SearchOutlined } from '@ant-design/icons'
+import { EditOutlined, InboxOutlined, UndoOutlined, SearchOutlined } from '@ant-design/icons'
 import { useState } from 'react'
 import { CRIME_TYPES, ZONES } from '../../data/mockData'
 
@@ -9,7 +9,7 @@ const STATUS_COLORS = {
   'Pending': 'error',
 }
 
-function IncidentTable({ incidents = [], onEdit, onDelete, loading = false }) {
+function IncidentTable({ incidents = [], onEdit, onArchive, onRestore, archivedView = false, loading = false }) {
   const [search, setSearch] = useState('')
 
   const filtered = incidents.filter(i => {
@@ -86,23 +86,33 @@ function IncidentTable({ incidents = [], onEdit, onDelete, loading = false }) {
       width: 110,
       fixed: 'right',
       render: (_, record) => (
-        <Space>
-          <Button
-            icon={<EditOutlined />}
-            size="small"
-            onClick={() => onEdit?.(record)}
-            title="Edit"
-          />
+        archivedView ? (
           <Popconfirm
-            title="Delete incident?"
-            description="This action cannot be undone."
-            onConfirm={() => onDelete?.(record.incidentID)}
-            okText="Delete"
-            okButtonProps={{ danger: true }}
+            title="Restore incident?"
+            description="It will move back to the active records."
+            onConfirm={() => onRestore?.(record.incidentID)}
+            okText="Restore"
           >
-            <Button icon={<DeleteOutlined />} size="small" danger title="Delete" />
+            <Button icon={<UndoOutlined />} size="small" title="Restore">Restore</Button>
           </Popconfirm>
-        </Space>
+        ) : (
+          <Space>
+            <Button
+              icon={<EditOutlined />}
+              size="small"
+              onClick={() => onEdit?.(record)}
+              title="Edit"
+            />
+            <Popconfirm
+              title="Archive incident?"
+              description="It will be hidden from active records but kept in the history."
+              onConfirm={() => onArchive?.(record.incidentID)}
+              okText="Archive"
+            >
+              <Button icon={<InboxOutlined />} size="small" title="Archive" />
+            </Popconfirm>
+          </Space>
+        )
       ),
     },
   ]
