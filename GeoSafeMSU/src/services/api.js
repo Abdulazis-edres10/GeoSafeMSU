@@ -54,7 +54,7 @@ const toZone = (row) => ({
 })
 
 const toUser = (row) => ({
-  userID: row.user_id,
+  userID: row.id, // profiles.id (the auth user's UUID)
   name: row.name,
   username: row.username,
   role: row.role,
@@ -151,41 +151,57 @@ export async function deleteIncident(id) {
 // Users
 // ---------------------------------------------------------------------------
 
-// GET /api/users — note we never select the password column.
+// GET /api/users — the user list is now the profiles table (the source of truth
+// linked to real auth accounts). Never selects any password — there is none here.
 export async function getUsers() {
   const { data, error } = await supabase
-    .from('users')
-    .select('user_id, name, username, role')
+    .from('profiles')
+    .select('id, name, username, role')
   if (error) throw error
   return data.map(toUser)
 }
 
-// POST /api/users
+// POST /api/users — creates a REAL login account via the create-user Edge Function.
+// The function runs server-side (service-role key) so it can create the auth.users
+// credential + profiles row. invoke() automatically attaches the caller's session
+// token, which the function uses to confirm the caller is an admin.
 export async function createUser(data) {
-  // Generate the next U### id by reading the existing ones and taking max + 1.
-  const { data: existing, error: readErr } = await supabase.from('users').select('user_id')
-  if (readErr) throw readErr
-  const maxNum = existing.reduce((max, u) => {
-    const n = parseInt(u.user_id.replace('U', ''), 10)
-    return Number.isNaN(n) ? max : Math.max(max, n)
-  }, 0)
-
-  const row = {
-    user_id: `U${String(maxNum + 1).padStart(3, '0')}`,
-    name: data.name,
-    username: data.username,
-    password: data.password,
-    role: data.role,
+  const { data: result, error } = await supabase.functions.invoke('create-user', {
+    body: {
+      name: data.name,
+      username: data.username,
+      password: data.password,
+      role: data.role,
+    },
+  })
+  if (error) {
+    // On a non-2xx the function's JSON body holds a human-readable reason.
+    let messageText = 'Failed to create user.'
+    try {
+      const body = await error.context.json()
+      if (body?.error) messageText = body.error
+    } catch { /* body unreadable — keep the generic message */ }
+    throw new Error(messageText)
   }
-  const { data: inserted, error } = await supabase.from('users').insert(row).select().single()
-  if (error) throw error
-  return toUser(inserted)
+  return result // { id, username, name, role }
 }
 
-// DELETE /api/users/:id
+// DELETE /api/users/:id — removes the real account (auth.users + profiles row)
+// via the delete-user Edge Function. invoke() attaches the caller's session token,
+// which the function uses to confirm the caller is an admin (and isn't deleting
+// themselves). `id` is the profiles/auth UUID.
 export async function deleteUser(id) {
-  const { error } = await supabase.from('users').delete().eq('user_id', id)
-  if (error) throw error
+  const { error } = await supabase.functions.invoke('delete-user', {
+    body: { id },
+  })
+  if (error) {
+    let messageText = 'Failed to delete user.'
+    try {
+      const body = await error.context.json()
+      if (body?.error) messageText = body.error
+    } catch { /* body unreadable — keep the generic message */ }
+    throw new Error(messageText)
+  }
   return { success: true }
 }
 

@@ -44,8 +44,8 @@ function AdminPage() {
       await deleteUser(id)
       message.success('User removed.')
       loadUsers()
-    } catch {
-      message.error('Failed to remove user.')
+    } catch (e) {
+      message.error(e.message || 'Failed to remove user.')
     }
   }
 
@@ -56,8 +56,8 @@ function AdminPage() {
       message.success('User created successfully.')
       setModalOpen(false)
       loadUsers()
-    } catch {
-      message.error('Failed to create user.')
+    } catch (e) {
+      message.error(e.message || 'Failed to create user.')
     } finally {
       setSaving(false)
     }

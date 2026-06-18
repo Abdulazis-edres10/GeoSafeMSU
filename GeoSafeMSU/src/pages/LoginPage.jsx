@@ -16,10 +16,10 @@ function LoginPage() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const onFinish = ({ username, password }) => {
+  const onFinish = async ({ username, password }) => {
     setLoading(true);
     setError(null);
-    const result = login(username, password);
+    const result = await login(username, password);
     setLoading(false);
     if (!result.success) {
       setError(result.message);
@@ -139,7 +139,7 @@ function LoginPage() {
               </Button>
             </Form>
 
-            <div className="login-demo">
+            {/* <div className="login-demo">
               <span className="login-demo-label">Demo accounts</span>
               <div className="login-demo-grid">
                 <span>
@@ -149,7 +149,7 @@ function LoginPage() {
                   <strong>Officer</strong> officer1 / officer123
                 </span>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
