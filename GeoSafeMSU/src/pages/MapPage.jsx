@@ -4,7 +4,7 @@ import { EnvironmentOutlined } from '@ant-design/icons'
 import MapView from '../components/map/MapView'
 import MapFilters from '../components/map/MapFilters'
 import HeatmapLegend from '../components/map/HeatmapLegend'
-import { getIncidents } from '../services/api'
+import { getIncidents, getZones } from '../services/api'
 
 const { Title } = Typography
 
@@ -17,6 +17,7 @@ const INTENSITY = {
 
 function MapPage() {
   const [incidents, setIncidents] = useState([])
+  const [zones, setZones] = useState([])
   const [loading, setLoading] = useState(true)
   const [showHeatmap, setShowHeatmap] = useState(false)
   const [intensity, setIntensity] = useState('Medium')
@@ -29,6 +30,11 @@ function MapPage() {
       setLoading(false)
     })
   }, [filters])
+
+  // Zones don't depend on the filters, so fetch them just once on mount.
+  useEffect(() => {
+    getZones().then(setZones).catch(() => {})
+  }, [])
 
   const { radius, blur } = INTENSITY[intensity]
 
@@ -71,6 +77,7 @@ function MapPage() {
         <div style={{ position: 'relative' }}>
           <MapView
             incidents={incidents}
+            zones={zones}
             showHeatmap={showHeatmap}
             heatmapRadius={radius}
             heatmapBlur={blur}

@@ -176,6 +176,7 @@ function CampusZonesPage() {
       >
         <MapView
           incidents={incidents}
+          zones={zones}
           className="map-container-mini"
           highlightZoneId={selectedZoneId}
           focusBounds={focusBounds}

@@ -14,7 +14,6 @@ L.Icon.Default.mergeOptions({
 import { MapContainer, TileLayer, Polygon, Tooltip, useMap } from 'react-leaflet'
 import IncidentMarker from './IncidentMarker'
 import HeatmapLayer from './HeatmapLayer'
-import { ZONES } from '../../data/mockData'
 import '../../css/MapView.css'
 
 // Real MSU Main Campus, Marawi.
@@ -44,6 +43,7 @@ function MapFocuser({ bounds, focusKey }) {
 
 function MapView({
   incidents = [],
+  zones = [],
   showHeatmap = false,
   showZones = true,
   onMarkerClick,
@@ -69,7 +69,7 @@ function MapView({
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      {showZones && ZONES.map(zone => {
+      {showZones && zones.map(zone => {
         const isHighlighted = zone.locationID === highlightZoneId
         return (
           <Polygon

@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import dayjs from 'dayjs'
 import { useAuth } from '../../hooks/useAuth'
 import { createIncident, updateIncident } from '../../services/api'
-import { CRIME_TYPES, ZONES } from '../../data/mockData'
+import { CRIME_TYPES } from '../../data/mockData'
 import LocationPicker from '../map/LocationPicker'
 import { findZoneForPoint, pointInPolygon } from '../../utils/geo'
 
@@ -16,7 +16,7 @@ const STATUS_OPTIONS = [
 // Campus center — sensible default pin for a new incident.
 const MSU_CENTER = { lat: 7.99688, lng: 124.26149 }
 
-function IncidentForm({ initialValues = null, onSuccess, onCancel }) {
+function IncidentForm({ initialValues = null, zones = [], onSuccess, onCancel }) {
   const { user } = useAuth()
   const [form] = Form.useForm()
   const [loading, setLoading] = useState(false)
@@ -31,11 +31,11 @@ function IncidentForm({ initialValues = null, onSuccess, onCancel }) {
     lng: Number.isFinite(lng) ? lng : MSU_CENTER.lng,
   }
   const hasPin = Number.isFinite(lat) && Number.isFinite(lng)
-  const detectedZone = hasPin ? findZoneForPoint(lat, lng, ZONES) : null
+  const detectedZone = hasPin ? findZoneForPoint(lat, lng, zones) : null
 
   // Flag when the manually-selected zone doesn't actually contain the map pin.
   const selectedZoneId = Form.useWatch('locationID', form)
-  const selectedZone = ZONES.find(z => z.locationID === selectedZoneId) ?? null
+  const selectedZone = zones.find(z => z.locationID === selectedZoneId) ?? null
   const zoneMismatch =
     hasPin && selectedZone && !pointInPolygon(lat, lng, selectedZone.boundaryCoordinates)
 
@@ -47,7 +47,7 @@ function IncidentForm({ initialValues = null, onSuccess, onCancel }) {
       })
     } else {
       form.resetFields()
-      const defaultZone = findZoneForPoint(MSU_CENTER.lat, MSU_CENTER.lng, ZONES)
+      const defaultZone = findZoneForPoint(MSU_CENTER.lat, MSU_CENTER.lng, zones)
       form.setFieldsValue({
         dateTime: dayjs(),
         incidentStatus: 'Pending',
@@ -70,7 +70,7 @@ function IncidentForm({ initialValues = null, onSuccess, onCancel }) {
   const handlePick = (pickedLat, pickedLng) => {
     const updates = { lat: pickedLat, lng: pickedLng }
     // Auto-select the zone the pin falls inside (still manually overridable).
-    const zone = findZoneForPoint(pickedLat, pickedLng, ZONES)
+    const zone = findZoneForPoint(pickedLat, pickedLng, zones)
     if (zone) updates.locationID = zone.locationID
     form.setFieldsValue(updates)
   }
@@ -91,7 +91,8 @@ function IncidentForm({ initialValues = null, onSuccess, onCancel }) {
         message.success('Incident recorded successfully.')
       }
       onSuccess?.()
-    } catch {
+    } catch (err) {
+      console.error('Incident save failed:', err)
       message.error('Failed to save incident. Please try again.')
     } finally {
       setLoading(false)
@@ -132,7 +133,7 @@ function IncidentForm({ initialValues = null, onSuccess, onCancel }) {
       >
         <Select
           placeholder="Auto-fills from the map pin, or select manually"
-          options={ZONES.map(z => ({ value: z.locationID, label: z.campusZoneName }))}
+          options={zones.map(z => ({ value: z.locationID, label: z.campusZoneName }))}
         />
       </Form.Item>
 

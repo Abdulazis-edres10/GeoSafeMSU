@@ -118,6 +118,7 @@ function IncidentPage() {
       >
         <IncidentForm
           initialValues={editingIncident}
+          zones={zones}
           onSuccess={handleFormSuccess}
           onCancel={() => setModalOpen(false)}
         />
