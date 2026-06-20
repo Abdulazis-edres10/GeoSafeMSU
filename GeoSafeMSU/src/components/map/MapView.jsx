@@ -21,6 +21,14 @@ import '../../css/MapView.css'
 const MSU_CENTER = [7.99688, 124.26149]
 const DEFAULT_ZOOM = 17
 
+// The rectangle the map is locked to — [south-west corner, north-east corner].
+// These are rough estimates; tune them until the box hugs the campus.
+const MSU_BOUNDS = [
+  [7.985, 124.248], // SW corner (bottom-left)
+  [8.010, 124.275], // NE corner (top-right)
+]
+const MIN_ZOOM = 16 // furthest you can zoom OUT (smaller number = see more area)
+
 // Imperatively pans/zooms the map to a set of bounds whenever focusKey changes.
 function MapFocuser({ bounds, focusKey }) {
   const map = useMap()
@@ -51,6 +59,9 @@ function MapView({
     <MapContainer
       center={MSU_CENTER}
       zoom={DEFAULT_ZOOM}
+      minZoom={MIN_ZOOM}
+      maxBounds={MSU_BOUNDS}
+      maxBoundsViscosity={1.0}
       className={className}
       scrollWheelZoom={true}
     >
