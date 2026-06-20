@@ -1,21 +1,20 @@
 import { Row, Col, Card, Statistic } from 'antd'
 import { AlertOutlined, CalendarOutlined, TagOutlined, EnvironmentOutlined } from '@ant-design/icons'
-import { CRIME_TYPES, ZONES } from '../../data/mockData'
 
-function StatsSummary({ incidents = [] }) {
+function StatsSummary({ incidents = [], crimeTypes = [], zones = [] }) {
   const now = new Date()
   const thisMonth = incidents.filter(i => {
     const d = new Date(i.dateTime)
     return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()
   }).length
 
-  const typeCounts = CRIME_TYPES.map(ct => ({
+  const typeCounts = crimeTypes.map(ct => ({
     name: ct.typeName,
     count: incidents.filter(i => i.crimeTypeID === ct.crimeTypeID).length,
   }))
   const topType = typeCounts.reduce((a, b) => (b.count > a.count ? b : a), { name: '—', count: 0 })
 
-  const zoneCounts = ZONES.map(z => ({
+  const zoneCounts = zones.map(z => ({
     name: z.campusZoneName,
     count: incidents.filter(i => i.locationID === z.locationID).length,
   }))

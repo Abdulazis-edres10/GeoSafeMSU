@@ -2,8 +2,6 @@ import { Card, Empty } from 'antd'
 import {
   PieChart, Pie, Cell, Sector, Tooltip, ResponsiveContainer,
 } from 'recharts'
-import { CRIME_TYPES } from '../../data/mockData'
-
 const COLORS = ['#AE2448', '#2C3E6B', '#27AE60', '#F39C12', '#E74C3C', '#aa3bff']
 const CHART_HEIGHT = 260
 
@@ -72,8 +70,8 @@ function TypeTooltip({ active, payload }) {
   )
 }
 
-function CrimeTypeChart({ incidents = [] }) {
-  const rawData = CRIME_TYPES.map((ct, i) => ({
+function CrimeTypeChart({ incidents = [], crimeTypes = [] }) {
+  const rawData = crimeTypes.map((ct, i) => ({
     name: ct.typeName,
     value: incidents.filter(inc => inc.crimeTypeID === ct.crimeTypeID).length,
     color: COLORS[i % COLORS.length],

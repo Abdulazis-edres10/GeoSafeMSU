@@ -4,8 +4,6 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, Cell,
 } from 'recharts'
-import { ZONES } from '../../data/mockData'
-
 function ZoneTooltip({ active, payload }) {
   if (!active || !payload?.length) return null
   const { fullName, count } = payload[0].payload
@@ -22,10 +20,10 @@ function ZoneTooltip({ active, payload }) {
   )
 }
 
-function ZoneBarChart({ incidents = [] }) {
+function ZoneBarChart({ incidents = [], zones = [] }) {
   const [selected, setSelected] = useState(null)
 
-  const data = ZONES.map(z => ({
+  const data = zones.map(z => ({
     zone: z.campusZoneName.replace('College of ', '').replace(' Area', '').replace(' Building', ''),
     fullName: z.campusZoneName,
     locationID: z.locationID,

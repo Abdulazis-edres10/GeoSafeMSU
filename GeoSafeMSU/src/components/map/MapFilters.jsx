@@ -1,10 +1,9 @@
 import { Card, Select, DatePicker, Space, Button } from 'antd'
 import { FilterOutlined, ClearOutlined } from '@ant-design/icons'
-import { CRIME_TYPES, ZONES } from '../../data/mockData'
 
-function MapFilters({ filters, onChange }) {
-  const crimeTypeOptions = CRIME_TYPES.map(c => ({ value: c.crimeTypeID, label: c.typeName }))
-  const zoneOptions = ZONES.map(z => ({ value: z.locationID, label: z.campusZoneName }))
+function MapFilters({ filters, onChange, crimeTypes = [], zones = [] }) {
+  const crimeTypeOptions = crimeTypes.map(c => ({ value: c.crimeTypeID, label: c.typeName }))
+  const zoneOptions = zones.map(z => ({ value: z.locationID, label: z.campusZoneName }))
 
   const handleClear = () => {
     onChange({ crimeTypeID: null, locationID: null, dateRange: null })

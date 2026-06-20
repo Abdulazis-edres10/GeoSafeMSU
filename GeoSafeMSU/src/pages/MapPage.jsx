@@ -4,7 +4,7 @@ import { EnvironmentOutlined } from '@ant-design/icons'
 import MapView from '../components/map/MapView'
 import MapFilters from '../components/map/MapFilters'
 import HeatmapLegend from '../components/map/HeatmapLegend'
-import { getIncidents, getZones } from '../services/api'
+import { getIncidents, getZones, getUsers, getCrimeTypes } from '../services/api'
 
 const { Title } = Typography
 
@@ -18,6 +18,8 @@ const INTENSITY = {
 function MapPage() {
   const [incidents, setIncidents] = useState([])
   const [zones, setZones] = useState([])
+  const [users, setUsers] = useState([])
+  const [crimeTypes, setCrimeTypes] = useState([])
   const [loading, setLoading] = useState(true)
   const [showHeatmap, setShowHeatmap] = useState(false)
   const [intensity, setIntensity] = useState('Medium')
@@ -31,9 +33,12 @@ function MapPage() {
     })
   }, [filters])
 
-  // Zones don't depend on the filters, so fetch them just once on mount.
+  // Zones, users, and crime types don't depend on the filters, so fetch them
+  // once on mount.
   useEffect(() => {
     getZones().then(setZones).catch(() => {})
+    getUsers().then(setUsers).catch(() => {})
+    getCrimeTypes().then(setCrimeTypes).catch(() => {})
   }, [])
 
   const { radius, blur } = INTENSITY[intensity]
@@ -67,7 +72,7 @@ function MapPage() {
         </Space>
       </div>
 
-      <MapFilters filters={filters} onChange={setFilters} />
+      <MapFilters filters={filters} onChange={setFilters} crimeTypes={crimeTypes} zones={zones} />
 
       {loading ? (
         <div style={{ display: 'flex', justifyContent: 'center', padding: 48 }}>
@@ -78,6 +83,8 @@ function MapPage() {
           <MapView
             incidents={incidents}
             zones={zones}
+            users={users}
+            crimeTypes={crimeTypes}
             showHeatmap={showHeatmap}
             heatmapRadius={radius}
             heatmapBlur={blur}

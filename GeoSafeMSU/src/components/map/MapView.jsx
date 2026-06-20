@@ -44,6 +44,8 @@ function MapFocuser({ bounds, focusKey }) {
 function MapView({
   incidents = [],
   zones = [],
+  users = [],
+  crimeTypes = [],
   showHeatmap = false,
   showZones = true,
   onMarkerClick,
@@ -90,6 +92,9 @@ function MapView({
         <IncidentMarker
           key={incident.incidentID}
           incident={incident}
+          users={users}
+          zones={zones}
+          crimeTypes={crimeTypes}
           onClick={onMarkerClick}
         />
       ))}

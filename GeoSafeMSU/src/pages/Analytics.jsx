@@ -5,14 +5,15 @@ import StatsSummary from '../components/analytics/StatsSummary'
 import CrimeTrendChart from '../components/analytics/CrimeTrendChart'
 import CrimeTypeChart from '../components/analytics/CrimeTypeChart'
 import ZoneBarChart from '../components/analytics/ZoneBarChart'
-import { getIncidents } from '../services/api'
+import { getIncidents, getCrimeTypes, getZones } from '../services/api'
 import { generateReport } from '../services/reportService'
-import { CRIME_TYPES, ZONES } from '../data/mockData'
 
 const { Title } = Typography
 
 function Analytics() {
   const [incidents, setIncidents] = useState([])
+  const [crimeTypes, setCrimeTypes] = useState([])
+  const [zones, setZones] = useState([])
   const [loading, setLoading] = useState(true)
   const [reportLoading, setReportLoading] = useState(false)
 
@@ -21,12 +22,14 @@ function Analytics() {
       setIncidents(data)
       setLoading(false)
     })
+    getCrimeTypes().then(setCrimeTypes).catch(() => {})
+    getZones().then(setZones).catch(() => {})
   }, [])
 
   const handleGenerateReport = async () => {
     setReportLoading(true)
     try {
-      generateReport(incidents, CRIME_TYPES, ZONES)
+      generateReport(incidents, crimeTypes, zones)
       message.success('Report generated and downloaded.')
     } catch {
       message.error('Failed to generate report.')
@@ -61,15 +64,15 @@ function Analytics() {
         </Button>
       </div>
 
-      <StatsSummary incidents={incidents} />
+      <StatsSummary incidents={incidents} crimeTypes={crimeTypes} zones={zones} />
       <CrimeTrendChart incidents={incidents} />
 
       <Row gutter={[16, 16]}>
         <Col xs={24} lg={12}>
-          <CrimeTypeChart incidents={incidents} />
+          <CrimeTypeChart incidents={incidents} crimeTypes={crimeTypes} />
         </Col>
         <Col xs={24} lg={12}>
-          <ZoneBarChart incidents={incidents} />
+          <ZoneBarChart incidents={incidents} zones={zones} />
         </Col>
       </Row>
     </div>

@@ -1,6 +1,5 @@
 import { Marker, Popup } from 'react-leaflet'
 import { Tag, Divider } from 'antd'
-import { CRIME_TYPES, ZONES } from '../../data/mockData'
 
 const STATUS_COLORS = {
   'Resolved': 'success',
@@ -8,9 +7,10 @@ const STATUS_COLORS = {
   'Pending': 'error',
 }
 
-function IncidentMarker({ incident, onClick }) {
-  const crimeType = CRIME_TYPES.find(c => c.crimeTypeID === incident.crimeTypeID)
-  const zone = ZONES.find(z => z.locationID === incident.locationID)
+function IncidentMarker({ incident, users = [], zones = [], crimeTypes = [], onClick }) {
+  const crimeType = crimeTypes.find(c => c.crimeTypeID === incident.crimeTypeID)
+  const zone = zones.find(z => z.locationID === incident.locationID)
+  const reporter = users.find(u => u.userID === incident.reportingOfficer)
 
   return (
     <Marker
@@ -44,8 +44,12 @@ function IncidentMarker({ incident, onClick }) {
             </Tag>
           </div>
           <Divider style={{ margin: '6px 0' }} />
-          <div style={{ fontSize: 12, color: '#555', lineHeight: 1.5 }}>
+          <div style={{ fontSize: 12, color: '#555', lineHeight: 1.5, marginBottom: 8 }}>
             {incident.description}
+          </div>
+          <div>
+            <span style={{ color: '#888', fontSize: 11 }}>REPORTED BY</span><br />
+            <strong>{reporter?.name ?? 'Unknown'}</strong>
           </div>
         </div>
       </Popup>

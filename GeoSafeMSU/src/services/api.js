@@ -92,7 +92,25 @@ export async function getIncidents(filters = {}) {
 
 // POST /api/incidents
 export async function createIncident(data) {
-  const row = { ...fromIncident(data), incident_id: `INC${Date.now()}`, archived: false }
+  // Generate the next sequential ID (INC001, INC002, …) — same scheme as crime
+  // types and zones. We read every incident_id and take the highest, but only
+  // count well-formed sequential IDs: legacy timestamp IDs (INC<13 digits>) are
+  // ignored so they don't push the counter into the billions.
+  const { data: existing, error: readErr } = await supabase
+    .from('incidents')
+    .select('incident_id')
+  if (readErr) throw readErr
+  const maxNum = existing.reduce((max, i) => {
+    const match = /^INC(\d{1,6})$/.exec(i.incident_id)
+    if (!match) return max
+    return Math.max(max, parseInt(match[1], 10))
+  }, 0)
+
+  const row = {
+    ...fromIncident(data),
+    incident_id: `INC${String(maxNum + 1).padStart(3, '0')}`,
+    archived: false,
+  }
   const { data: inserted, error } = await supabase
     .from('incidents')
     .insert(row)

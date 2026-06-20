@@ -8,8 +8,10 @@ const STATUS_COLORS = {
   'Pending': 'error',
 }
 
-function IncidentTable({ incidents = [], crimeTypes = [], zones = [], onEdit, onArchive, onRestore, archivedView = false, loading = false }) {
+function IncidentTable({ incidents = [], crimeTypes = [], zones = [], users = [], onEdit, onArchive, onRestore, archivedView = false, loading = false }) {
   const [search, setSearch] = useState('')
+
+  const officerName = id => users.find(u => u.userID === id)?.name ?? '—'
 
   const filtered = incidents.filter(i => {
     if (!search) return true
@@ -19,7 +21,8 @@ function IncidentTable({ incidents = [], crimeTypes = [], zones = [], onEdit, on
       i.incidentID.toLowerCase().includes(term) ||
       i.description.toLowerCase().includes(term) ||
       typeName.toLowerCase().includes(term) ||
-      i.incidentStatus.toLowerCase().includes(term)
+      i.incidentStatus.toLowerCase().includes(term) ||
+      officerName(i.reportingOfficer).toLowerCase().includes(term)
     )
   })
 
@@ -78,6 +81,15 @@ function IncidentTable({ incidents = [], crimeTypes = [], zones = [], onEdit, on
       key: 'description',
       ellipsis: true,
       render: text => text.length > 80 ? text.substring(0, 80) + '…' : text,
+    },
+    {
+      title: 'Reported By',
+      dataIndex: 'reportingOfficer',
+      key: 'reportingOfficer',
+      width: 160,
+      render: officerName,
+      filters: users.map(u => ({ text: u.name, value: u.userID })),
+      onFilter: (value, record) => record.reportingOfficer === value,
     },
     {
       title: 'Actions',

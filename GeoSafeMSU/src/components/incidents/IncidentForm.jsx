@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react'
 import dayjs from 'dayjs'
 import { useAuth } from '../../hooks/useAuth'
 import { createIncident, updateIncident } from '../../services/api'
-import { CRIME_TYPES } from '../../data/mockData'
 import LocationPicker from '../map/LocationPicker'
 import { findZoneForPoint, pointInPolygon } from '../../utils/geo'
 
@@ -16,7 +15,7 @@ const STATUS_OPTIONS = [
 // Campus center — sensible default pin for a new incident.
 const MSU_CENTER = { lat: 7.99688, lng: 124.26149 }
 
-function IncidentForm({ initialValues = null, zones = [], onSuccess, onCancel }) {
+function IncidentForm({ initialValues = null, zones = [], crimeTypes = [], onSuccess, onCancel }) {
   const { user } = useAuth()
   const [form] = Form.useForm()
   const [loading, setLoading] = useState(false)
@@ -81,12 +80,14 @@ function IncidentForm({ initialValues = null, zones = [], onSuccess, onCancel })
       const data = {
         ...values,
         dateTime: values.dateTime.toISOString(),
-        reportingOfficer: user.userID,
       }
       if (isEdit) {
+        // Don't reassign the reporter on edit — keep whoever originally filed it.
+        delete data.reportingOfficer
         await updateIncident(initialValues.incidentID, data)
         message.success('Incident updated successfully.')
       } else {
+        data.reportingOfficer = user.userID
         await createIncident(data)
         message.success('Incident recorded successfully.')
       }
@@ -121,7 +122,7 @@ function IncidentForm({ initialValues = null, zones = [], onSuccess, onCancel })
       >
         <Select
           placeholder="Select crime type"
-          options={CRIME_TYPES.map(c => ({ value: c.crimeTypeID, label: c.typeName }))}
+          options={crimeTypes.map(c => ({ value: c.crimeTypeID, label: c.typeName }))}
         />
       </Form.Item>
 

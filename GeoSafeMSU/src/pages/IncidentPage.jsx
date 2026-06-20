@@ -3,7 +3,7 @@ import { Button, Modal, Typography, Segmented, message } from 'antd'
 import { PlusOutlined, FileTextOutlined, InboxOutlined, UnorderedListOutlined } from '@ant-design/icons'
 import IncidentTable from '../components/incidents/IncidentTable'
 import IncidentForm from '../components/incidents/IncidentForm'
-import { getIncidents, archiveIncident, unarchiveIncident, getCrimeTypes, getZones } from '../services/api'
+import { getIncidents, archiveIncident, unarchiveIncident, getCrimeTypes, getZones, getUsers } from '../services/api'
 
 const { Title } = Typography
 
@@ -11,6 +11,7 @@ function IncidentPage() {
   const [incidents, setIncidents] = useState([])
   const [crimeTypes, setCrimeTypes] = useState([])
   const [zones, setZones] = useState([])
+  const [users, setUsers] = useState([])
   const [loading, setLoading] = useState(true)
   const [modalOpen, setModalOpen] = useState(false)
   const [editingIncident, setEditingIncident] = useState(null)
@@ -28,11 +29,12 @@ function IncidentPage() {
 
   useEffect(() => { loadIncidents() }, [loadIncidents])
 
-  // Crime types and zones are needed to show names in the table. They don't
-  // depend on the active/archived view, so we fetch them once on mount.
+  // Crime types, zones, and users are needed to show names in the table. They
+  // don't depend on the active/archived view, so we fetch them once on mount.
   useEffect(() => {
     getCrimeTypes().then(setCrimeTypes).catch(() => {})
     getZones().then(setZones).catch(() => {})
+    getUsers().then(setUsers).catch(() => {})
   }, [])
 
   const handleAdd = () => {
@@ -101,6 +103,7 @@ function IncidentPage() {
         incidents={incidents}
         crimeTypes={crimeTypes}
         zones={zones}
+        users={users}
         loading={loading}
         archivedView={view === 'archived'}
         onEdit={handleEdit}
@@ -119,6 +122,7 @@ function IncidentPage() {
         <IncidentForm
           initialValues={editingIncident}
           zones={zones}
+          crimeTypes={crimeTypes}
           onSuccess={handleFormSuccess}
           onCancel={() => setModalOpen(false)}
         />
