@@ -7,7 +7,7 @@ import MapView from '../components/map/MapView'
 import CrimeTrendChart from '../components/analytics/CrimeTrendChart'
 import CrimeTypeChart from '../components/analytics/CrimeTypeChart'
 import StatsSummary from '../components/analytics/StatsSummary'
-import { getIncidents } from '../services/api'
+import { getIncidents, getCrimeTypes } from '../services/api'
 import shield from '../assets/shield.png'
 import '../css/GuestDashboard.css'
 
@@ -17,6 +17,7 @@ function GuestDashboard() {
   const { user } = useAuth()
   const navigate = useNavigate()
   const [incidents, setIncidents] = useState([])
+  const [crimeTypes, setCrimeTypes] = useState([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -24,6 +25,7 @@ function GuestDashboard() {
       setIncidents(data)
       setLoading(false)
     })
+    getCrimeTypes().then(setCrimeTypes).catch(() => {})
   }, [])
 
   const handleExit = () => {
@@ -87,7 +89,7 @@ function GuestDashboard() {
                 <CrimeTrendChart incidents={incidents} />
               </Col>
               <Col xs={24} lg={12}>
-                <CrimeTypeChart incidents={incidents} />
+                <CrimeTypeChart incidents={incidents} crimeTypes={crimeTypes} />
               </Col>
             </Row>
           </>
