@@ -28,13 +28,6 @@ function IncidentTable({ incidents = [], crimeTypes = [], zones = [], users = []
 
   const columns = [
     {
-      title: 'ID',
-      dataIndex: 'incidentID',
-      key: 'incidentID',
-      width: 100,
-      render: id => <span style={{ fontWeight: 600, color: '#AE2448' }}>{id}</span>,
-    },
-    {
       title: 'Date & Time',
       dataIndex: 'dateTime',
       key: 'dateTime',
@@ -132,7 +125,7 @@ function IncidentTable({ incidents = [], crimeTypes = [], zones = [], users = []
     <div>
       <Input
         prefix={<SearchOutlined style={{ color: '#bbb' }} />}
-        placeholder="Search by ID, description, type, or status…"
+        placeholder="Search by description, type, or status…"
         value={search}
         onChange={e => setSearch(e.target.value)}
         style={{ marginBottom: 16, maxWidth: 400 }}

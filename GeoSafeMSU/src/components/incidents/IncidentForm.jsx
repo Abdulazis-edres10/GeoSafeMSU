@@ -2,7 +2,7 @@ import { Form, Input, Select, DatePicker, Button, Alert, message } from 'antd'
 import { useState, useEffect } from 'react'
 import dayjs from 'dayjs'
 import { useAuth } from '../../hooks/useAuth'
-import { createIncident, updateIncident } from '../../services/api'
+import { createIncident, updateIncident, getOrCreateCrimeType } from '../../services/api'
 import LocationPicker from '../map/LocationPicker'
 import { findZoneForPoint, pointInPolygon } from '../../utils/geo'
 
@@ -11,6 +11,10 @@ const STATUS_OPTIONS = [
   { value: 'Under Investigation', label: 'Under Investigation' },
   { value: 'Resolved', label: 'Resolved' },
 ]
+
+// Sentinel value for the "Other" crime-type choice. When selected, a free-text
+// box appears so the officer can name a crime type that isn't in the list.
+const OTHER_CRIME_TYPE = '__OTHER__'
 
 // Campus center — sensible default pin for a new incident.
 const MSU_CENTER = { lat: 7.99688, lng: 124.26149 }
@@ -31,6 +35,10 @@ function IncidentForm({ initialValues = null, zones = [], crimeTypes = [], onSuc
   }
   const hasPin = Number.isFinite(lat) && Number.isFinite(lng)
   const detectedZone = hasPin ? findZoneForPoint(lat, lng, zones) : null
+
+  // Show the free-text box only when "Other" is the chosen crime type.
+  const selectedCrimeType = Form.useWatch('crimeTypeID', form)
+  const isOtherCrimeType = selectedCrimeType === OTHER_CRIME_TYPE
 
   // Flag when the manually-selected zone doesn't actually contain the map pin.
   const selectedZoneId = Form.useWatch('locationID', form)
@@ -75,12 +83,29 @@ function IncidentForm({ initialValues = null, zones = [], crimeTypes = [], onSuc
   }
 
   const onFinish = async (values) => {
+    // Validate the Location (map pin) against the selected Zone before saving.
+    // If the pin doesn't fall inside the chosen zone, refuse to record.
+    if (zoneMismatch) {
+      message.error('Incident cannot be recorded: The selected Location does not match the assigned Zone.')
+      return
+    }
+
     setLoading(true)
     try {
+      // Resolve the "Other" free-text crime type to a real crime_types row
+      // (reused if the name already exists) so the incident stores a valid ID.
+      let crimeTypeID = values.crimeTypeID
+      if (crimeTypeID === OTHER_CRIME_TYPE) {
+        const created = await getOrCreateCrimeType(values.customCrimeType)
+        crimeTypeID = created.crimeTypeID
+      }
+
       const data = {
         ...values,
+        crimeTypeID,
         dateTime: values.dateTime.toISOString(),
       }
+      delete data.customCrimeType
       if (isEdit) {
         // Don't reassign the reporter on edit — keep whoever originally filed it.
         delete data.reportingOfficer
@@ -122,9 +147,26 @@ function IncidentForm({ initialValues = null, zones = [], crimeTypes = [], onSuc
       >
         <Select
           placeholder="Select crime type"
-          options={crimeTypes.map(c => ({ value: c.crimeTypeID, label: c.typeName }))}
+          options={[
+            ...crimeTypes.map(c => ({ value: c.crimeTypeID, label: c.typeName })),
+            { value: OTHER_CRIME_TYPE, label: 'Other (specify)' },
+          ]}
         />
       </Form.Item>
+
+      {isOtherCrimeType && (
+        <Form.Item
+          label="Specify Crime Type"
+          name="customCrimeType"
+          rules={[
+            { required: true, message: 'Please enter the specific crime type.' },
+            { min: 3, message: 'Minimum 3 characters.' },
+          ]}
+          tooltip="Enter the crime type since it isn't in the list above."
+        >
+          <Input placeholder="e.g. Cyberbullying" />
+        </Form.Item>
+      )}
 
       <Form.Item
         label="Campus Zone"
@@ -207,10 +249,6 @@ function IncidentForm({ initialValues = null, zones = [], crimeTypes = [], onSuc
         rules={[{ required: true, message: 'Please provide a description.' }]}
       >
         <Input.TextArea rows={4} placeholder="Describe the incident in detail…" />
-      </Form.Item>
-
-      <Form.Item label="Reporting Officer" name="reportingOfficer">
-        <Input disabled defaultValue={user?.name} placeholder={user?.name} />
       </Form.Item>
 
       <Form.Item style={{ marginBottom: 0, textAlign: 'right' }}>

@@ -1,10 +1,11 @@
 import { useState, useEffect, useCallback } from 'react'
 import {
   Table, Button, Modal, Form, Input, Select, Tag,
-  Popconfirm, message, Typography, Space,
+  Popconfirm, message, Typography,
 } from 'antd'
-import { PlusOutlined, TeamOutlined, DeleteOutlined } from '@ant-design/icons'
-import { getUsers, createUser, deleteUser } from '../services/api'
+import { PlusOutlined, TeamOutlined, StopOutlined, CheckCircleOutlined } from '@ant-design/icons'
+import { getUsers, createUser, setUserStatus } from '../services/api'
+import { useAuth } from '../hooks/useAuth'
 
 const { Title } = Typography
 
@@ -16,6 +17,7 @@ const ROLE_OPTIONS = [
 const ROLE_COLORS = { admin: 'red', officer: 'blue' }
 
 function AdminPage() {
+  const { user: currentUser } = useAuth()
   const [users, setUsers] = useState([])
   const [loading, setLoading] = useState(true)
   const [modalOpen, setModalOpen] = useState(false)
@@ -39,13 +41,14 @@ function AdminPage() {
     setModalOpen(true)
   }
 
-  const handleDelete = async (id) => {
+  const handleToggleStatus = async (record) => {
+    const nextDisabled = !record.disabled
     try {
-      await deleteUser(id)
-      message.success('User removed.')
+      await setUserStatus(record.userID, nextDisabled)
+      message.success(nextDisabled ? 'Account disabled.' : 'Account enabled.')
       loadUsers()
     } catch (e) {
-      message.error(e.message || 'Failed to remove user.')
+      message.error(e.message || 'Failed to update account status.')
     }
   }
 
@@ -64,12 +67,6 @@ function AdminPage() {
   }
 
   const columns = [
-    {
-      title: 'User ID',
-      dataIndex: 'userID',
-      width: 90,
-      render: id => <span style={{ color: '#AE2448', fontWeight: 600 }}>{id}</span>,
-    },
     { title: 'Full Name', dataIndex: 'name', sorter: (a, b) => a.name.localeCompare(b.name) },
     { title: 'Username', dataIndex: 'username' },
     {
@@ -84,22 +81,59 @@ function AdminPage() {
       onFilter: (value, record) => record.role === value,
     },
     {
+      title: 'Status',
+      dataIndex: 'disabled',
+      width: 110,
+      render: disabled => (
+        <Tag color={disabled ? 'default' : 'success'}>
+          {disabled ? 'Disabled' : 'Active'}
+        </Tag>
+      ),
+      filters: [
+        { text: 'Active', value: false },
+        { text: 'Disabled', value: true },
+      ],
+      onFilter: (value, record) => record.disabled === value,
+    },
+    {
       title: 'Actions',
       key: 'actions',
-      width: 100,
-      render: (_, record) => (
-        <Popconfirm
-          title="Remove this user?"
-          description="This action cannot be undone."
-          onConfirm={() => handleDelete(record.userID)}
-          okText="Remove"
-          okButtonProps={{ danger: true }}
-        >
-          <Button icon={<DeleteOutlined />} danger size="small">Remove</Button>
-        </Popconfirm>
-      ),
+      width: 130,
+      render: (_, record) => {
+        const isSelf = record.userID === currentUser?.userID
+        // An admin can't disable their own account (lockout guard). Enabling is
+        // always allowed; disabling is blocked for self.
+        if (isSelf && !record.disabled) {
+          return <Button size="small" disabled>Disable</Button>
+        }
+        return (
+          <Popconfirm
+            title={record.disabled ? 'Enable this account?' : 'Disable this account?'}
+            description={
+              record.disabled
+                ? 'The user will be able to log in again.'
+                : 'The user will be blocked from logging in. Their data is kept.'
+            }
+            onConfirm={() => handleToggleStatus(record)}
+            okText={record.disabled ? 'Enable' : 'Disable'}
+            okButtonProps={{ danger: !record.disabled }}
+          >
+            {record.disabled ? (
+              <Button icon={<CheckCircleOutlined />} size="small" style={{ color: '#389e0d', borderColor: '#389e0d' }}>
+                Enable
+              </Button>
+            ) : (
+              <Button icon={<StopOutlined />} danger size="small">Disable</Button>
+            )}
+          </Popconfirm>
+        )
+      },
     },
   ]
+
+  // Hide the logged-in admin's own account — managing yourself here isn't useful
+  // (you can't disable yourself anyway), so it only adds noise.
+  const visibleUsers = users.filter(u => u.userID !== currentUser?.userID)
 
   return (
     <div>
@@ -121,7 +155,7 @@ function AdminPage() {
       <Table
         rowKey="userID"
         columns={columns}
-        dataSource={users}
+        dataSource={visibleUsers}
         loading={loading}
         pagination={{ pageSize: 10, showTotal: total => `${total} users` }}
         bordered

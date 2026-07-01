@@ -419,7 +419,7 @@ enabled = true
 [functions.create-user]
 verify_jwt = false
 
-# delete-user also authenticates the caller itself (admin check + self-delete
+# set-user-status also authenticates the caller itself (admin check + self-disable
 # guard), so the gateway's JWT check is disabled here too (and required for CORS).
-[functions.delete-user]
+[functions.set-user-status]
 verify_jwt = false

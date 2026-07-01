@@ -214,7 +214,6 @@ function CampusZonesPage() {
                   }}>
                     {meta.icon}
                   </span>
-                  <Tag style={{ marginInlineEnd: 0 }}>{zone.locationID}</Tag>
                 </div>
 
                 <Title level={5} style={{ marginBottom: 6 }}>{zone.campusZoneName}</Title>

@@ -13,12 +13,21 @@ export function AuthProvider({ children }) {
   async function loadProfile(authUser) {
     const { data, error } = await supabase
       .from('profiles')
-      .select('id, username, name, role')
+      .select('id, username, name, role, disabled')
       .eq('id', authUser.id)   // profiles.id === auth.users.id (same UUID)
       .single()
 
     if (error || !data) {
       // Auth user exists but has no profile row → treat as not logged in.
+      setUser(null)
+      setIsAuthenticated(false)
+      return null
+    }
+
+    if (data.disabled) {
+      // Account disabled after this session began (or an active token slipped
+      // through). Force sign-out so a disabled user can't keep using the app.
+      await supabase.auth.signOut()
       setUser(null)
       setIsAuthenticated(false)
       return null
@@ -66,12 +75,22 @@ export function AuthProvider({ children }) {
     // Step 1: username → email lookup (the pre-auth read our RLS policy allows).
     const { data: profile, error: lookupError } = await supabase
       .from('profiles')
-      .select('email')
+      .select('email, disabled')
       .eq('username', username)
       .single()
 
     if (lookupError || !profile) {
       return { success: false, message: 'Invalid username or password.' }
+    }
+
+    // Disabled accounts are also banned at the auth layer (so sign-in would fail
+    // anyway), but check here first to give a clear reason instead of a generic
+    // "invalid credentials" error.
+    if (profile.disabled) {
+      return {
+        success: false,
+        message: 'This account has been disabled. Please contact an administrator.',
+      }
     }
 
     // Step 2: real authentication — Supabase checks the hashed password server-side.

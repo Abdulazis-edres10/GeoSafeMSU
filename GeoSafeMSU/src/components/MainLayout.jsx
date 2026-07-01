@@ -10,7 +10,6 @@ const BREADCRUMB_MAP = {
   '/map': ['Home', 'Crime Map'],
   '/zones': ['Home', 'Campus Zones'],
   '/incidents': ['Home', 'Incidents'],
-  '/crime-types': ['Home', 'Crime Types'],
   '/analytics': ['Home', 'Analytics'],
   '/admin': ['Home', 'User Management'],
 }

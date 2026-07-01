@@ -58,6 +58,7 @@ const toUser = (row) => ({
   name: row.name,
   username: row.username,
   role: row.role,
+  disabled: row.disabled ?? false,
 })
 
 // ---------------------------------------------------------------------------
@@ -174,7 +175,7 @@ export async function deleteIncident(id) {
 export async function getUsers() {
   const { data, error } = await supabase
     .from('profiles')
-    .select('id, name, username, role')
+    .select('id, name, username, role, disabled')
   if (error) throw error
   return data.map(toUser)
 }
@@ -204,23 +205,25 @@ export async function createUser(data) {
   return result // { id, username, name, role }
 }
 
-// DELETE /api/users/:id — removes the real account (auth.users + profiles row)
-// via the delete-user Edge Function. invoke() attaches the caller's session token,
-// which the function uses to confirm the caller is an admin (and isn't deleting
-// themselves). `id` is the profiles/auth UUID.
-export async function deleteUser(id) {
-  const { error } = await supabase.functions.invoke('delete-user', {
-    body: { id },
+// POST — enable/disable an account via the set-user-status Edge Function.
+// Disabling bans the auth user (blocking login) and flips profiles.disabled, but
+// preserves the account and all its historical data. `id` is the profiles/auth
+// UUID; `disabled` is the new state. invoke() attaches the caller's session token,
+// which the function uses to confirm the caller is an admin (and isn't disabling
+// themselves).
+export async function setUserStatus(id, disabled) {
+  const { data: result, error } = await supabase.functions.invoke('set-user-status', {
+    body: { id, disabled },
   })
   if (error) {
-    let messageText = 'Failed to delete user.'
+    let messageText = 'Failed to update account status.'
     try {
       const body = await error.context.json()
       if (body?.error) messageText = body.error
     } catch { /* body unreadable — keep the generic message */ }
     throw new Error(messageText)
   }
-  return { success: true }
+  return result // { id, disabled }
 }
 
 // ---------------------------------------------------------------------------
@@ -251,6 +254,42 @@ export async function createCrimeType(data) {
     description: data.description?.trim() ?? '',
   }
   const { data: inserted, error } = await supabase.from('crime_types').insert(row).select().single()
+  if (error) throw error
+  return toCrimeType(inserted)
+}
+
+// Find a crime type by name (case-insensitive), or create it if it doesn't
+// exist yet. Backs the incident form's "Other" option: a free-text crime type
+// still maps to a real crime_types row, so the incident FK, the table name
+// lookup, and the analytics-by-type all keep working.
+export async function getOrCreateCrimeType(name) {
+  const trimmed = (name ?? '').trim()
+  if (!trimmed) throw new Error('Crime type name is required.')
+
+  const { data: existing, error: readErr } = await supabase
+    .from('crime_types')
+    .select('*')
+  if (readErr) throw readErr
+
+  const match = existing.find(
+    c => c.type_name.toLowerCase() === trimmed.toLowerCase()
+  )
+  if (match) return toCrimeType(match)
+
+  const maxNum = existing.reduce((max, c) => {
+    const n = parseInt(c.crime_type_id.replace('CT', ''), 10)
+    return Number.isNaN(n) ? max : Math.max(max, n)
+  }, 0)
+  const row = {
+    crime_type_id: `CT${String(maxNum + 1).padStart(3, '0')}`,
+    type_name: trimmed,
+    description: '',
+  }
+  const { data: inserted, error } = await supabase
+    .from('crime_types')
+    .insert(row)
+    .select()
+    .single()
   if (error) throw error
   return toCrimeType(inserted)
 }

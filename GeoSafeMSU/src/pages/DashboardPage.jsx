@@ -37,12 +37,6 @@ function DashboardPage() {
   // the live DB lists rather than a frozen copy.
   const recentColumns = [
     {
-      title: 'ID',
-      dataIndex: 'incidentID',
-      width: 100,
-      render: id => <span style={{ color: '#AE2448', fontWeight: 600 }}>{id}</span>,
-    },
-    {
       title: 'Date',
       dataIndex: 'dateTime',
       width: 130,

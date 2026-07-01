@@ -1,7 +1,6 @@
 import 'antd/dist/reset.css'
 import '../css/LandingPage.css'
 import { Button } from 'antd'
-import { ArrowRightOutlined } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
 import shield from '../assets/shield.png'
 
@@ -23,23 +22,26 @@ function LandingPage() {
               <div className="brand-sub">Department of Security &amp; Services · MSU Marawi</div>
             </div>
           </div>
-
-          <div className="header-actions">
-            <button className="header-signin-btn" onClick={() => navigate('/login')}>
-              Sign In
-              <ArrowRightOutlined />
-            </button>
-          </div>
         </div>
       </header>
 
       <div className="hero-section">
+        <div className="hero-aurora" aria-hidden="true">
+          <span className="aurora aurora-1" />
+          <span className="aurora aurora-2" />
+        </div>
         <div className="hero-content">
-          <h1 className="hero-title">Campus Safety,<br />Mapped in Real Time</h1>
+          <div className="hero-badge">
+            <span className="hero-badge-dot" />
+            Official DSS Monitoring Platform
+          </div>
+          <h1 className="hero-title">
+            Campus Safety,<br />
+            <span className="hero-title-accent">Mapped in Real Time</span>
+          </h1>
           <p className="hero-desc">
-            GeoSafe MSU is the official geospatial crime monitoring platform for Mindanao State
-            University — Marawi Campus. Empowering the DSS with actionable data to keep the
-            university community safe.
+            The official geospatial crime monitoring platform for MSU — Marawi Campus,
+            empowering the DSS with actionable data to keep the community safe.
           </p>
           <div className="hero-actions">
             <Button
@@ -59,29 +61,6 @@ function LandingPage() {
               View as Guest
             </Button>
           </div>
-        </div>
-      </div>
-
-      <div className="features-section">
-        <div className="feature-card">
-          <div className="feature-icon">🗺️</div>
-          <h3>Interactive Crime Map</h3>
-          <p>Visualize incidents across MSU campus zones with real-time pins and heatmap overlays.</p>
-        </div>
-        <div className="feature-card">
-          <div className="feature-icon">📊</div>
-          <h3>Analytics Dashboard</h3>
-          <p>Trend charts, zone breakdowns, and statistical summaries for informed decision-making.</p>
-        </div>
-        <div className="feature-card">
-          <div className="feature-icon">🔒</div>
-          <h3>Role-Based Access</h3>
-          <p>Secure access for Admins, Security Officers, and read-only views for students and faculty.</p>
-        </div>
-        <div className="feature-card">
-          <div className="feature-icon">📋</div>
-          <h3>Incident Management</h3>
-          <p>Digital incident recording, tracking, and exportable PDF reports — no more paper forms.</p>
         </div>
       </div>
 
