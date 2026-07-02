@@ -55,8 +55,8 @@ function AdminPage() {
   const handleSubmit = async (values) => {
     setSaving(true)
     try {
-      await createUser(values)
-      message.success('User created successfully.')
+      const created = await createUser(values)
+      message.success(`Invitation sent to ${created.email}. They'll set their own password from the link.`)
       setModalOpen(false)
       loadUsers()
     } catch (e) {
@@ -185,12 +185,18 @@ function AdminPage() {
           >
             <Input placeholder="e.g. officer3" />
           </Form.Item>
+          {/* No password field: the user sets their own via the emailed invite
+              link, so the admin never sees or handles their credentials. */}
           <Form.Item
-            label="Password"
-            name="password"
-            rules={[{ required: true }, { min: 6, message: 'Minimum 6 characters.' }]}
+            label="Email"
+            name="email"
+            rules={[
+              { required: true },
+              { type: 'email', message: 'Please enter a valid email address.' },
+            ]}
+            extra="An invitation link will be sent here for the user to set their own password."
           >
-            <Input.Password placeholder="••••••••" />
+            <Input placeholder="e.g. juandelacruz@gmail.com" />
           </Form.Item>
           <Form.Item label="Role" name="role" rules={[{ required: true }]}>
             <Select options={ROLE_OPTIONS} placeholder="Select role" />
@@ -203,7 +209,7 @@ function AdminPage() {
               loading={saving}
               style={{ background: '#AE2448', border: 'none' }}
             >
-              Create User
+              Send Invitation
             </Button>
           </Form.Item>
         </Form>

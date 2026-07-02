@@ -13,6 +13,7 @@ import Analytics from './pages/Analytics'
 import AdminPage from './pages/AdminPage'
 import CampusZonesPage from './pages/CampusZonesPage'
 import GuestDashboard from './pages/GuestDashboard'
+import SetPasswordPage from './pages/SetPasswordPage'
 
 import ProtectedRoute from './components/ProtectedRoute'
 import MainLayout from './components/MainLayout'
@@ -55,6 +56,9 @@ function App() {
       <Route path="/" element={<RootRedirect />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/unauthorized" element={<UnauthorizedPage />} />
+      {/* Public: where the emailed invite link lands. Must not be behind
+          ProtectedRoute — the invitee has a session but is mid-onboarding. */}
+      <Route path="/set-password" element={<SetPasswordPage />} />
 
       {/* Legacy alias. NOTE: do not add `/Dashboard` or `/Analytics` aliases —
           React Router matches case-insensitively, so they collide with the real

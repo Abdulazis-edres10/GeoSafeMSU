@@ -1,12 +1,17 @@
 // Edge Function: create-user
-// Creates a REAL login account (auth.users credential + profiles row) on behalf
-// of an admin. Runs server-side so it can safely use the service-role key, which
-// must NEVER be exposed to the browser.
+// Onboards a new account via a SECURE INVITE, on behalf of an admin. Runs
+// server-side so it can safely use the service-role key, which must NEVER be
+// exposed to the browser.
+//
+// Security model: the admin never chooses or sees a password. Supabase emails
+// the new user a one-time invite link; the user proves control of that inbox
+// by clicking it, then sets their own private password on our /set-password
+// page. Until then the account exists but has no usable password.
 //
 // Flow:
 //   1. Authenticate the CALLER and confirm they are an admin.
-//   2. Create the auth user (auto-confirmed) with email = `${username}@geosafe.msu`.
-//   3. Insert the matching profiles row (same UUID).
+//   2. Send the invite email (creates the auth.users row, unconfirmed, no password).
+//   3. Insert the matching profiles row (same UUID) with the real email.
 //   4. If the profile insert fails, delete the half-created auth user (rollback).
 
 import { createClient } from 'jsr:@supabase/supabase-js@2'
@@ -60,44 +65,63 @@ Deno.serve(async (req) => {
     }
 
     // --- 2. Validate the requested new account ----------------------------
-    const { name, username, password, role } = await req.json()
-    if (!name || !username || !password || !role) {
-      return json({ error: 'name, username, password and role are required.' }, 400)
+    // No password here anymore: the user will set their own via the invite link.
+    const { name, username, email, role, redirectTo } = await req.json()
+    if (!name || !username || !email || !role) {
+      return json({ error: 'name, username, email and role are required.' }, 400)
     }
     if (!['admin', 'officer'].includes(role)) {
       return json({ error: 'role must be admin or officer.' }, 400)
     }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return json({ error: 'Please provide a valid email address.' }, 400)
+    }
 
-    const email = `${username}@geosafe.msu`
+    // Check the username early — inviteUserByEmail would already have sent an
+    // email by the time the profiles insert catches a duplicate username.
+    const { data: usernameTaken } = await admin
+      .from('profiles')
+      .select('id')
+      .eq('username', username)
+      .maybeSingle()
+    if (usernameTaken) {
+      return json({ error: 'That username is already taken.' }, 400)
+    }
 
-    // --- 3. Create the auth user (auto-confirmed) -------------------------
-    const { data: created, error: createErr } = await admin.auth.admin.createUser({
-      email,
-      password,
-      email_confirm: true,
-      user_metadata: { name, username },
-    })
-    if (createErr || !created?.user) {
-      return json({ error: createErr?.message ?? 'Could not create auth user.' }, 400)
+    // --- 3. Send the invite (creates the auth user, passwordless) ---------
+    // redirectTo tells Supabase where the emailed link should land. It is only
+    // honored if that URL is on the project's Redirect URLs allow-list
+    // (Dashboard -> Authentication -> URL Configuration), so a forged value
+    // from a client can't hijack the link.
+    const { data: invited, error: inviteErr } =
+      await admin.auth.admin.inviteUserByEmail(email, {
+        data: { name, username },
+        redirectTo,
+      })
+    if (inviteErr || !invited?.user) {
+      const msg = inviteErr?.message?.includes('already been registered')
+        ? 'An account with that email already exists.'
+        : inviteErr?.message ?? 'Could not send the invitation.'
+      return json({ error: msg }, 400)
     }
 
     // --- 4. Insert the profiles row (same UUID); roll back on failure -----
     const { error: profileErr } = await admin.from('profiles').insert({
-      id: created.user.id,
+      id: invited.user.id,
       username,
       name,
       role,
       email,
     })
     if (profileErr) {
-      await admin.auth.admin.deleteUser(created.user.id) // undo the auth user
+      await admin.auth.admin.deleteUser(invited.user.id) // undo the auth user
       const msg = profileErr.message.includes('duplicate')
-        ? 'That username is already taken.'
+        ? 'That username or email is already taken.'
         : profileErr.message
       return json({ error: msg }, 400)
     }
 
-    return json({ id: created.user.id, username, name, role }, 201)
+    return json({ id: invited.user.id, username, name, role, email }, 201)
   } catch (e) {
     return json({ error: String(e) }, 500)
   }

@@ -180,17 +180,22 @@ export async function getUsers() {
   return data.map(toUser)
 }
 
-// POST /api/users — creates a REAL login account via the create-user Edge Function.
-// The function runs server-side (service-role key) so it can create the auth.users
-// credential + profiles row. invoke() automatically attaches the caller's session
-// token, which the function uses to confirm the caller is an admin.
+// POST /api/users — onboards a REAL account via the create-user Edge Function.
+// No password crosses the wire: the function emails the new user an invite link,
+// and they set their own password on our /set-password page. The function runs
+// server-side (service-role key) so it can create the auth.users credential +
+// profiles row. invoke() automatically attaches the caller's session token,
+// which the function uses to confirm the caller is an admin.
 export async function createUser(data) {
   const { data: result, error } = await supabase.functions.invoke('create-user', {
     body: {
       name: data.name,
       username: data.username,
-      password: data.password,
+      email: data.email,
       role: data.role,
+      // Where the emailed invite link should land. Supabase only honors this
+      // if the URL is on the project's redirect allow-list.
+      redirectTo: `${window.location.origin}/set-password`,
     },
   })
   if (error) {
@@ -202,7 +207,7 @@ export async function createUser(data) {
     } catch { /* body unreadable — keep the generic message */ }
     throw new Error(messageText)
   }
-  return result // { id, username, name, role }
+  return result // { id, username, name, role, email }
 }
 
 // POST — enable/disable an account via the set-user-status Edge Function.
