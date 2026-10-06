@@ -48,7 +48,7 @@ function LoginPage() {
             <p className="login-brand-org">
               Department of Security and Services
               <br />
-              Mindanao State University — Marawi Campus
+              Mindanao State University — Main Campus Marawi
             </p>
           </div>
         </div>

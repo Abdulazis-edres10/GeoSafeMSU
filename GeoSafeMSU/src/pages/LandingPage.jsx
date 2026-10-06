@@ -31,10 +31,6 @@ function LandingPage() {
           <span className="aurora aurora-2" />
         </div>
         <div className="hero-content">
-          <div className="hero-badge">
-            <span className="hero-badge-dot" />
-            Official DSS Monitoring Platform
-          </div>
           <h1 className="hero-title">
             Campus Safety,<br />
             <span className="hero-title-accent">Mapped in Real Time</span>
@@ -47,7 +43,7 @@ function LandingPage() {
             <Button
               type="primary"
               size="large"
-              style={{ background: '#AE2448', border: 'none', height: 48, paddingInline: 32 }}
+              style={{ background: '#7a1f3d', border: 'none', height: 48, paddingInline: 32 }}
               onClick={() => navigate('/login')}
             >
               Access System
@@ -55,7 +51,7 @@ function LandingPage() {
             <Button
               size="large"
               ghost
-              style={{ height: 48, paddingInline: 32, color: 'white', borderColor: 'rgba(255,255,255,0.4)' }}
+              style={{ height: 48, paddingInline: 32, color: 'white', borderColor: 'rgba(255,255,255,0.5)' }}
               onClick={() => navigate('/guest')}
             >
               View as Guest

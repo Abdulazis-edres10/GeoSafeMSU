@@ -6,7 +6,8 @@
   justify-content: center;
   align-items: center;
   padding: 24px;
-  background: linear-gradient(135deg, #0f1929 0%, #1a1035 50%, #2c3e6b 100%);
+  /*background: linear-gradient(135deg, #0f1929 0%, #1a1035 50%, #2c3e6b 100%);*/
+  background-color: #14234a;
 }
 
 .login-card {
@@ -28,7 +29,9 @@
   align-items: center;
   justify-content: center;
   padding: 48px 40px;
-  background: linear-gradient(135deg, #0f1929 0%, #1a1035 50%, #2c3e6b 100%);
+  /*background: linear-gradient(135deg, #0f1929 0%, #1a1035 50%, #2c3e6b 100%);*/
+  background-color: #7a1f3d;
+
   color: #fff;
   text-align: center;
   overflow: hidden;
@@ -135,7 +138,7 @@
   height: 46px;
   font-size: 15px;
   font-weight: 600;
-  background: #ae2448;
+  background: #7a1f3d;
   border: none;
   box-shadow: 0 6px 16px rgba(174, 36, 72, 0.35);
 }
