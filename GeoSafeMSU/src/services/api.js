@@ -40,6 +40,29 @@ function fromIncident(data) {
   return row
 }
 
+const toPerson = (row) => ({
+  personID: row.id,
+  role: row.role,
+  fullName: row.full_name,
+  age: row.age,
+  gender: row.gender,
+  civilStatus: row.civil_status,
+  birthdate: row.birthdate,
+  address: row.address,
+})
+
+// Empty optional fields become null so the DB stores "unknown", not "".
+const fromPerson = (incidentID, p) => ({
+  incident_id: incidentID,
+  role: p.role,
+  full_name: p.fullName.trim(),
+  age: Number.isFinite(p.age) ? p.age : null,
+  gender: p.gender || null,
+  civil_status: p.civilStatus || null,
+  birthdate: p.birthdate || null,
+  address: p.address?.trim() || null,
+})
+
 const toCrimeType = (row) => ({
   crimeTypeID: row.crime_type_id,
   typeName: row.type_name,
@@ -164,6 +187,57 @@ export async function deleteIncident(id) {
   const { error } = await supabase.from('incidents').delete().eq('incident_id', id)
   if (error) throw error
   return { success: true }
+}
+
+// ---------------------------------------------------------------------------
+// Incident persons (victims + suspects)
+// ---------------------------------------------------------------------------
+
+// GET /api/incidents/:id/persons — logged-in users only (RLS hides these from guests).
+export async function getIncidentPersons(incidentID) {
+  const { data, error } = await supabase
+    .from('incident_persons')
+    .select('*')
+    .eq('incident_id', incidentID)
+    .order('created_at')
+  if (error) throw error
+  return data.map(toPerson)
+}
+
+// GET persons for many incidents in ONE request (instead of one request per
+// table row). Returns { [incidentID]: [person, …] }.
+export async function getPersonsForIncidents(incidentIDs) {
+  if (incidentIDs.length === 0) return {}
+  const { data, error } = await supabase
+    .from('incident_persons')
+    .select('*')
+    .in('incident_id', incidentIDs)
+    .order('created_at')
+  if (error) throw error
+  const byIncident = {}
+  for (const row of data) {
+    (byIncident[row.incident_id] ??= []).push(toPerson(row))
+  }
+  return byIncident
+}
+
+// PUT /api/incidents/:id/persons — replace the incident's whole list of people
+// with `persons`. Simpler than diffing adds/edits/removals: delete the old
+// rows, then insert the current ones.
+export async function saveIncidentPersons(incidentID, persons) {
+  const { error: delErr } = await supabase
+    .from('incident_persons')
+    .delete()
+    .eq('incident_id', incidentID)
+  if (delErr) throw delErr
+
+  if (persons.length === 0) return []
+  const { data, error } = await supabase
+    .from('incident_persons')
+    .insert(persons.map(p => fromPerson(incidentID, p)))
+    .select()
+  if (error) throw error
+  return data.map(toPerson)
 }
 
 // ---------------------------------------------------------------------------

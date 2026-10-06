@@ -1,9 +1,16 @@
-import { Form, Input, Select, DatePicker, Button, Alert, message } from 'antd'
+import { Form, Input, Select, DatePicker, Button, Alert, Divider, Row, Col, message } from 'antd'
 import { useState, useEffect } from 'react'
 import dayjs from 'dayjs'
 import { useAuth } from '../../hooks/useAuth'
-import { createIncident, updateIncident, getOrCreateCrimeType } from '../../services/api'
+import {
+  createIncident,
+  updateIncident,
+  getOrCreateCrimeType,
+  getIncidentPersons,
+  saveIncidentPersons,
+} from '../../services/api'
 import LocationPicker from '../map/LocationPicker'
+import PersonListSection from './PersonListSection'
 import { findZoneForPoint, pointInPolygon } from '../../utils/geo'
 
 const STATUS_OPTIONS = [
@@ -25,6 +32,10 @@ function IncidentForm({ initialValues = null, zones = [], crimeTypes = [], onSuc
   const [loading, setLoading] = useState(false)
   const [recenterKey, setRecenterKey] = useState(0)
   const isEdit = !!initialValues?.incidentID
+  // 'loading' | 'ready' | 'error'. Saving people replaces the whole list, so on
+  // edit we must never save them unless the existing list actually loaded —
+  // otherwise a failed fetch would wipe the incident's victims and suspects.
+  const [personsState, setPersonsState] = useState(isEdit ? 'loading' : 'ready')
 
   // Keep the picker in sync with the form's lat/lng fields.
   const lat = Form.useWatch('lat', form)
@@ -66,6 +77,31 @@ function IncidentForm({ initialValues = null, zones = [], crimeTypes = [], onSuc
     setRecenterKey(k => k + 1)
   }, [initialValues, form])
 
+  useEffect(() => {
+    if (!isEdit) {
+      setPersonsState('ready')
+      return
+    }
+    let cancelled = false
+    setPersonsState('loading')
+    getIncidentPersons(initialValues.incidentID)
+      .then(persons => {
+        if (cancelled) return
+        const toFormValue = p => ({ ...p, birthdate: p.birthdate ? dayjs(p.birthdate) : null })
+        form.setFieldsValue({
+          victims: persons.filter(p => p.role === 'victim').map(toFormValue),
+          suspects: persons.filter(p => p.role === 'suspect').map(toFormValue),
+        })
+        setPersonsState('ready')
+      })
+      .catch(err => {
+        if (cancelled) return
+        console.error('Failed to load victims/suspects:', err)
+        setPersonsState('error')
+      })
+    return () => { cancelled = true }
+  }, [isEdit, initialValues, form])
+
   // Pop a transient toast the moment a mismatch appears (in addition to the
   // persistent inline warning).
   useEffect(() => {
@@ -100,22 +136,48 @@ function IncidentForm({ initialValues = null, zones = [], crimeTypes = [], onSuc
         crimeTypeID = created.crimeTypeID
       }
 
+      const { victims = [], suspects = [], ...rest } = values
       const data = {
-        ...values,
+        ...rest,
         crimeTypeID,
         dateTime: values.dateTime.toISOString(),
       }
       delete data.customCrimeType
+
+      let incidentID
       if (isEdit) {
         // Don't reassign the reporter on edit — keep whoever originally filed it.
         delete data.reportingOfficer
         await updateIncident(initialValues.incidentID, data)
-        message.success('Incident updated successfully.')
+        incidentID = initialValues.incidentID
       } else {
         data.reportingOfficer = user.userID
-        await createIncident(data)
-        message.success('Incident recorded successfully.')
+        const created = await createIncident(data)
+        incidentID = created.incidentID
       }
+
+      if (personsState === 'ready') {
+        const toPerson = role => p => ({
+          ...p,
+          role,
+          birthdate: p.birthdate ? p.birthdate.format('YYYY-MM-DD') : null,
+        })
+        try {
+          await saveIncidentPersons(incidentID, [
+            ...victims.map(toPerson('victim')),
+            ...suspects.map(toPerson('suspect')),
+          ])
+        } catch (err) {
+          console.error('Victim/suspect save failed:', err)
+          message.warning(
+            `Incident ${incidentID} was saved, but the victim/suspect details were not. Edit the incident to try again.`
+          )
+          onSuccess?.()
+          return
+        }
+      }
+
+      message.success(isEdit ? 'Incident updated successfully.' : 'Incident recorded successfully.')
       onSuccess?.()
     } catch (err) {
       console.error('Incident save failed:', err)
@@ -250,6 +312,33 @@ function IncidentForm({ initialValues = null, zones = [], crimeTypes = [], onSuc
       >
         <Input.TextArea rows={4} placeholder="Describe the incident in detail…" />
       </Form.Item>
+
+      <Divider titlePlacement="start" style={{ marginTop: 8 }}>Persons Involved</Divider>
+
+      {personsState === 'loading' && (
+        <div style={{ fontSize: 12, color: '#888', marginBottom: 12 }}>Loading victims and suspects…</div>
+      )}
+      {personsState === 'error' && (
+        <Alert
+          type="error"
+          showIcon
+          style={{ marginBottom: 12 }}
+          message="Couldn't load the victims and suspects for this incident."
+          description="You can still save the other incident details. Victims and suspects won't be changed. Close and reopen the form to try again."
+        />
+      )}
+      {personsState === 'ready' && (
+        <Row gutter={16}>
+          <Col xs={24} md={12}>
+            <PersonListSection form={form} listName="victims" title="Victims" accentColor="#1f4e9c" />
+          </Col>
+          <Col xs={24} md={12}>
+            <PersonListSection form={form} listName="suspects" title="Suspects" accentColor="#AE2448" />
+          </Col>
+        </Row>
+      )}
+
+      <Divider style={{ margin: '16px 0' }} />
 
       <Form.Item style={{ marginBottom: 0, textAlign: 'right' }}>
         <Button onClick={onCancel} style={{ marginRight: 8 }}>Cancel</Button>

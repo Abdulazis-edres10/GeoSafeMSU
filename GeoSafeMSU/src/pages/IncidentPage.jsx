@@ -3,7 +3,15 @@ import { Button, Modal, Typography, Segmented, message } from 'antd'
 import { PlusOutlined, FileTextOutlined, InboxOutlined, UnorderedListOutlined } from '@ant-design/icons'
 import IncidentTable from '../components/incidents/IncidentTable'
 import IncidentForm from '../components/incidents/IncidentForm'
-import { getIncidents, archiveIncident, unarchiveIncident, getCrimeTypes, getZones, getUsers } from '../services/api'
+import {
+  getIncidents,
+  archiveIncident,
+  unarchiveIncident,
+  getCrimeTypes,
+  getZones,
+  getUsers,
+  getPersonsForIncidents,
+} from '../services/api'
 
 const { Title } = Typography
 
@@ -12,6 +20,7 @@ function IncidentPage() {
   const [crimeTypes, setCrimeTypes] = useState([])
   const [zones, setZones] = useState([])
   const [users, setUsers] = useState([])
+  const [personsByIncident, setPersonsByIncident] = useState({})
   const [loading, setLoading] = useState(true)
   const [modalOpen, setModalOpen] = useState(false)
   const [editingIncident, setEditingIncident] = useState(null)
@@ -22,6 +31,13 @@ function IncidentPage() {
     try {
       const data = await getIncidents(view === 'archived' ? { archivedOnly: true } : {})
       setIncidents(data)
+      // Victims/suspects are secondary: if they fail to load, still show the incidents.
+      try {
+        setPersonsByIncident(await getPersonsForIncidents(data.map(i => i.incidentID)))
+      } catch (err) {
+        console.error('Failed to load victims/suspects:', err)
+        setPersonsByIncident({})
+      }
     } finally {
       setLoading(false)
     }
@@ -104,6 +120,7 @@ function IncidentPage() {
         crimeTypes={crimeTypes}
         zones={zones}
         users={users}
+        personsByIncident={personsByIncident}
         loading={loading}
         archivedView={view === 'archived'}
         onEdit={handleEdit}
@@ -116,7 +133,7 @@ function IncidentPage() {
         open={modalOpen}
         onCancel={() => setModalOpen(false)}
         footer={null}
-        width={620}
+        width={960}
         destroyOnClose
       >
         <IncidentForm
