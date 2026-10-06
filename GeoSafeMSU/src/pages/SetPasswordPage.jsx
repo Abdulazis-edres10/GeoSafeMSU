@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
-import { Card, Form, Input, Button, Alert, Result, Spin, message } from 'antd'
+import { Card, Form, Input, Button, Alert, Result, Spin, ConfigProvider, message } from 'antd'
 import { LockOutlined } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../services/supabase'
+import { PALETTE, darkTheme } from '../theme'
 
 // Where the invite email's link lands. The link contains a one-time token;
 // Supabase verifies it and redirects here with the session in the URL hash
@@ -82,97 +83,101 @@ function SetPasswordPage() {
     navigate('/dashboard', { replace: true })
   }
 
+  const mutedText = 'rgba(237, 242, 247, 0.65)'
+
   return (
-    <div
-      style={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: '#f5f5f5',
-        padding: 16,
-      }}
-    >
-      <Card style={{ width: 420, boxShadow: '0 4px 16px rgba(0,0,0,0.08)' }}>
-        {status === 'checking' && (
-          <div style={{ textAlign: 'center', padding: '48px 0' }}>
-            <Spin size="large" />
-            <p style={{ marginTop: 16, color: '#888' }}>Verifying your invitation…</p>
-          </div>
-        )}
+    <ConfigProvider theme={darkTheme}>
+      <div
+        style={{
+          minHeight: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: PALETTE.bg,
+          padding: 16,
+        }}
+      >
+        <Card style={{ width: 420, boxShadow: '0 12px 32px rgba(0,0,0,0.45)' }}>
+          {status === 'checking' && (
+            <div style={{ textAlign: 'center', padding: '48px 0' }}>
+              <Spin size="large" />
+              <p style={{ marginTop: 16, color: mutedText }}>Verifying your invitation…</p>
+            </div>
+          )}
 
-        {status === 'invalid' && (
-          <Result
-            status="warning"
-            title="Invitation not valid"
-            subTitle={linkError}
-            extra={
-              <Button onClick={() => navigate('/')} style={{ borderColor: '#AE2448', color: '#AE2448' }}>
-                Back to Home
-              </Button>
-            }
-          />
-        )}
-
-        {status === 'ready' && (
-          <>
-            <h2 style={{ color: '#AE2448', marginBottom: 4 }}>Set your password</h2>
-            <p style={{ color: '#888', marginBottom: 24 }}>
-              Your identity is verified. Choose a private password to finish
-              setting up your GeoSafe MSU account — only you will know it.
-            </p>
-            <Alert
-              type="info"
-              showIcon
-              message="Your administrator cannot see the password you set here."
-              style={{ marginBottom: 20 }}
+          {status === 'invalid' && (
+            <Result
+              status="warning"
+              title="Invitation not valid"
+              subTitle={linkError}
+              extra={
+                <Button onClick={() => navigate('/')} style={{ borderColor: '#E86A8A', color: '#E86A8A' }}>
+                  Back to Home
+                </Button>
+              }
             />
-            <Form layout="vertical" onFinish={handleSubmit} requiredMark={false}>
-              <Form.Item
-                label="New Password"
-                name="password"
-                rules={[
-                  { required: true, message: 'Please choose a password.' },
-                  { min: 6, message: 'Minimum 6 characters.' },
-                ]}
-                hasFeedback
-              >
-                <Input.Password prefix={<LockOutlined />} placeholder="••••••••" size="large" />
-              </Form.Item>
-              <Form.Item
-                label="Confirm Password"
-                name="confirm"
-                dependencies={['password']}
-                hasFeedback
-                rules={[
-                  { required: true, message: 'Please confirm your password.' },
-                  ({ getFieldValue }) => ({
-                    validator(_, value) {
-                      if (!value || getFieldValue('password') === value) {
-                        return Promise.resolve()
-                      }
-                      return Promise.reject(new Error('The two passwords do not match.'))
-                    },
-                  }),
-                ]}
-              >
-                <Input.Password prefix={<LockOutlined />} placeholder="••••••••" size="large" />
-              </Form.Item>
-              <Button
-                type="primary"
-                htmlType="submit"
-                loading={saving}
-                size="large"
-                block
-                style={{ background: '#AE2448', border: 'none' }}
-              >
-                Set Password & Sign In
-              </Button>
-            </Form>
-          </>
-        )}
-      </Card>
-    </div>
+          )}
+
+          {status === 'ready' && (
+            <>
+              <h2 style={{ color: PALETTE.text, marginBottom: 4 }}>Set your password</h2>
+              <p style={{ color: mutedText, marginBottom: 24 }}>
+                Your identity is verified. Choose a private password to finish
+                setting up your GeoSafe MSU account — only you will know it.
+              </p>
+              <Alert
+                type="info"
+                showIcon
+                message="Your administrator cannot see the password you set here."
+                style={{ marginBottom: 20 }}
+              />
+              <Form layout="vertical" onFinish={handleSubmit} requiredMark={false}>
+                <Form.Item
+                  label="New Password"
+                  name="password"
+                  rules={[
+                    { required: true, message: 'Please choose a password.' },
+                    { min: 6, message: 'Minimum 6 characters.' },
+                  ]}
+                  hasFeedback
+                >
+                  <Input.Password prefix={<LockOutlined />} placeholder="••••••••" size="large" />
+                </Form.Item>
+                <Form.Item
+                  label="Confirm Password"
+                  name="confirm"
+                  dependencies={['password']}
+                  hasFeedback
+                  rules={[
+                    { required: true, message: 'Please confirm your password.' },
+                    ({ getFieldValue }) => ({
+                      validator(_, value) {
+                        if (!value || getFieldValue('password') === value) {
+                          return Promise.resolve()
+                        }
+                        return Promise.reject(new Error('The two passwords do not match.'))
+                      },
+                    }),
+                  ]}
+                >
+                  <Input.Password prefix={<LockOutlined />} placeholder="••••••••" size="large" />
+                </Form.Item>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  loading={saving}
+                  size="large"
+                  block
+                  style={{ background: PALETTE.brand, border: 'none' }}
+                >
+                  Set Password & Sign In
+                </Button>
+              </Form>
+            </>
+          )}
+        </Card>
+      </div>
+    </ConfigProvider>
   )
 }
 

@@ -127,7 +127,7 @@ function CampusZonesPage() {
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
-        <Title level={3} style={{ margin: 0, color: '#AE2448' }}>
+        <Title level={3} style={{ margin: 0 }}>
           <ApartmentOutlined style={{ marginRight: 8 }} />
           Campus Zones — MSU Main Campus
         </Title>

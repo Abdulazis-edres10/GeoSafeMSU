@@ -6,8 +6,7 @@
   justify-content: center;
   align-items: center;
   padding: 24px;
-  /*background: linear-gradient(135deg, #0f1929 0%, #1a1035 50%, #2c3e6b 100%);*/
-  background-color: #14234a;
+  background-color: #1A202C;
 }
 
 .login-card {
@@ -15,10 +14,10 @@
   width: 100%;
   max-width: 920px;
   min-height: 560px;
-  background: #ffffff;
+  background: #2D3748;
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
 }
 
 /* ----- Branding panel (left) ----- */
@@ -29,10 +28,8 @@
   align-items: center;
   justify-content: center;
   padding: 48px 40px;
-  /*background: linear-gradient(135deg, #0f1929 0%, #1a1035 50%, #2c3e6b 100%);*/
-  background-color: #7a1f3d;
-
-  color: #fff;
+  background-color: #AE2448;
+  color: #EDF2F7;
   text-align: center;
   overflow: hidden;
 }
@@ -65,6 +62,7 @@
 
 .login-brand-content h1 {
   margin: 0;
+  color: #EDF2F7;
   font-size: 30px;
   font-weight: 700;
   letter-spacing: 0.5px;
@@ -109,22 +107,22 @@
   margin: 0;
   font-size: 26px;
   font-weight: 700;
-  color: #1f2a44;
+  color: #EDF2F7;
 }
 
 .login-subtitle {
   margin: 6px 0 28px;
   font-size: 14px;
-  color: #8a93a6;
+  color: rgba(237, 242, 247, 0.65);
 }
 
 .login-input-icon {
-  color: #b0b6c3;
+  color: rgba(237, 242, 247, 0.45);
 }
 
 .login-form-panel .ant-form-item-label > label {
   font-weight: 600;
-  color: #4a5168;
+  color: rgba(237, 242, 247, 0.85);
 }
 
 .login-row {
@@ -138,21 +136,21 @@
   height: 46px;
   font-size: 15px;
   font-weight: 600;
-  background: #7a1f3d;
+  background: #AE2448;
   border: none;
   box-shadow: 0 6px 16px rgba(174, 36, 72, 0.35);
 }
 
 .login-submit-btn:hover {
-  background: #97203e !important;
+  background: #C42E57 !important;
 }
 
 .login-back-btn {
-  color: #8a93a6;
+  color: rgba(237, 242, 247, 0.65);
 }
 
 .login-back-btn:hover {
-  color: #ae2448 !important;
+  color: #E86A8A !important;
   background: transparent !important;
 }
 
@@ -216,7 +214,4 @@
   .login-form-panel {
     padding: 36px 28px;
   }
-}
-h1{
-  color: white;
 }

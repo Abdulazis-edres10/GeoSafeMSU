@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Card, Tag } from 'antd'
+import { Card, Tag, theme } from 'antd'
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, Cell,
@@ -22,6 +22,7 @@ function ZoneTooltip({ active, payload }) {
 
 function ZoneBarChart({ incidents = [], zones = [] }) {
   const [selected, setSelected] = useState(null)
+  const { token } = theme.useToken()
 
   const data = zones.map(z => ({
     zone: z.campusZoneName.replace('College of ', '').replace(' Area', '').replace(' Building', ''),
@@ -54,15 +55,15 @@ function ZoneBarChart({ incidents = [], zones = [] }) {
     >
       <ResponsiveContainer width="100%" height={300}>
         <BarChart data={data} margin={{ top: 5, right: 20, left: 0, bottom: 60 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+          <CartesianGrid strokeDasharray="3 3" stroke={token.colorBorderSecondary} />
           <XAxis
             dataKey="zone"
-            tick={{ fontSize: 11 }}
+            tick={{ fontSize: 11, fill: token.colorTextSecondary }}
             angle={-35}
             textAnchor="end"
             interval={0}
           />
-          <YAxis allowDecimals={false} tick={{ fontSize: 12 }} />
+          <YAxis allowDecimals={false} tick={{ fontSize: 12, fill: token.colorTextSecondary }} />
           <Tooltip content={<ZoneTooltip />} cursor={{ fill: 'rgba(174,36,72,0.06)' }} />
           <Bar
             dataKey="count"

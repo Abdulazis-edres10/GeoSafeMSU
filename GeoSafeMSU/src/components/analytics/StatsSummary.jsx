@@ -1,7 +1,9 @@
-import { Row, Col, Card, Statistic } from 'antd'
+import { Row, Col, Card, Statistic, theme } from 'antd'
 import { AlertOutlined, CalendarOutlined, TagOutlined, EnvironmentOutlined } from '@ant-design/icons'
 
 function StatsSummary({ incidents = [], crimeTypes = [], zones = [] }) {
+  // Theme-aware colors: readable on both the light guest page and the dark system.
+  const { token } = theme.useToken()
   const now = new Date()
   const thisMonth = incidents.filter(i => {
     const d = new Date(i.dateTime)
@@ -24,14 +26,14 @@ function StatsSummary({ incidents = [], crimeTypes = [], zones = [] }) {
     {
       title: 'Total Incidents',
       value: incidents.length,
-      icon: <AlertOutlined style={{ color: '#AE2448' }} />,
-      color: '#AE2448',
+      icon: <AlertOutlined style={{ color: token.colorPrimaryText }} />,
+      color: token.colorPrimaryText,
     },
     {
       title: 'This Month',
       value: thisMonth,
-      icon: <CalendarOutlined style={{ color: '#2C3E6B' }} />,
-      color: '#2C3E6B',
+      icon: <CalendarOutlined style={{ color: token.colorInfoText }} />,
+      color: token.colorInfoText,
     },
     {
       title: 'Most Common Type',

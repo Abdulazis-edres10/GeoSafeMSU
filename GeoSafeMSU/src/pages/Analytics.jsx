@@ -49,7 +49,7 @@ function Analytics() {
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-        <Title level={3} style={{ margin: 0, color: '#AE2448' }}>
+        <Title level={3} style={{ margin: 0 }}>
           <BarChartOutlined style={{ marginRight: 8 }} />
           Analytics Dashboard
         </Title>

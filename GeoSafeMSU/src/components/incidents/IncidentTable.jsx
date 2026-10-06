@@ -9,8 +9,8 @@ const STATUS_COLORS = {
   'Pending': 'error',
 }
 
-const VICTIM_COLOR = '#1f4e9c'
-const SUSPECT_COLOR = '#AE2448'
+const VICTIM_COLOR = '#63B3ED'
+const SUSPECT_COLOR = '#E86A8A'
 
 function PersonNames({ persons, color }) {
   if (persons.length === 0) return <span style={{ color: '#bbb' }}>—</span>

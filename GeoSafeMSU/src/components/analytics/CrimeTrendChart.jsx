@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Card, Segmented } from 'antd'
+import { Card, Segmented, theme } from 'antd'
 import {
   LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, Brush,
@@ -25,6 +25,8 @@ function TrendTooltip({ active, payload, label }) {
 
 function CrimeTrendChart({ incidents = [] }) {
   const [mode, setMode] = useState('Area')
+  const { token } = theme.useToken()
+  const tick = { fontSize: 12, fill: token.colorTextSecondary }
 
   const data = MONTHS.map((month, i) => ({
     month,
@@ -53,9 +55,9 @@ function CrimeTrendChart({ incidents = [] }) {
                 <stop offset="95%" stopColor="#AE2448" stopOpacity={0} />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-            <XAxis dataKey="month" tick={{ fontSize: 12 }} />
-            <YAxis allowDecimals={false} tick={{ fontSize: 12 }} />
+            <CartesianGrid strokeDasharray="3 3" stroke={token.colorBorderSecondary} />
+            <XAxis dataKey="month" tick={tick} />
+            <YAxis allowDecimals={false} tick={tick} />
             <Tooltip content={<TrendTooltip />} cursor={{ stroke: '#AE2448', strokeDasharray: '4 4' }} />
             <Area
               type="monotone"
@@ -67,13 +69,13 @@ function CrimeTrendChart({ incidents = [] }) {
               activeDot={{ r: 6 }}
               animationDuration={800}
             />
-            <Brush dataKey="month" height={26} stroke="#AE2448" travellerWidth={8} />
+            <Brush dataKey="month" height={26} stroke="#AE2448" fill={token.colorBgContainer} travellerWidth={8} />
           </AreaChart>
         ) : (
           <LineChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 5 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-            <XAxis dataKey="month" tick={{ fontSize: 12 }} />
-            <YAxis allowDecimals={false} tick={{ fontSize: 12 }} />
+            <CartesianGrid strokeDasharray="3 3" stroke={token.colorBorderSecondary} />
+            <XAxis dataKey="month" tick={tick} />
+            <YAxis allowDecimals={false} tick={tick} />
             <Tooltip content={<TrendTooltip />} cursor={{ stroke: '#AE2448', strokeDasharray: '4 4' }} />
             <Line
               type="monotone"
@@ -84,7 +86,7 @@ function CrimeTrendChart({ incidents = [] }) {
               activeDot={{ r: 6 }}
               animationDuration={800}
             />
-            <Brush dataKey="month" height={26} stroke="#AE2448" travellerWidth={8} />
+            <Brush dataKey="month" height={26} stroke="#AE2448" fill={token.colorBgContainer} travellerWidth={8} />
           </LineChart>
         )}
       </ResponsiveContainer>

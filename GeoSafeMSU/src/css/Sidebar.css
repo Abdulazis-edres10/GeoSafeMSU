@@ -1,7 +1,8 @@
 .sidebar {
   width: 240px;
   min-height: 100vh;
-  background-color: #2C3E6B;
+  background-color: var(--gs-surface);
+  border-right: 1px solid var(--gs-border);
   display: flex;
   flex-direction: column;
   transition: width 0.2s ease;
@@ -18,8 +19,8 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  background-color: #1e2d52;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
+  background-color: var(--gs-bg);
+  border-bottom: 1px solid var(--gs-border);
   overflow: hidden;
 }
 
@@ -33,7 +34,7 @@
 }
 
 .sidebar-logo-text {
-  color: white;
+  color: var(--gs-text);
   font-weight: 700;
   font-size: 13px;
   line-height: 1.2;
@@ -45,7 +46,7 @@
   display: block;
   font-weight: 400;
   font-size: 11px;
-  color: rgba(255,255,255,0.6);
+  color: var(--gs-text-muted);
   margin-top: 2px;
 }
 
@@ -58,7 +59,7 @@
 
 .sidebar-toggle {
   padding: 12px;
-  border-top: 1px solid rgba(255,255,255,0.08);
+  border-top: 1px solid var(--gs-border);
 }
 
 .sidebar-toggle button {
@@ -81,11 +82,11 @@
 .sidebar .ant-menu {
   background: transparent !important;
   border-inline-end: none !important;
-  color: #c8d0e7;
+  color: var(--gs-text-muted);
 }
 
 .sidebar .ant-menu-item {
-  color: #c8d0e7 !important;
+  color: var(--gs-text-muted) !important;
   border-radius: 0 !important;
   margin: 2px 8px !important;
   border-radius: 6px !important;
@@ -93,12 +94,12 @@
 
 .sidebar .ant-menu-item:hover {
   background-color: rgba(174, 36, 72, 0.25) !important;
-  color: #ffffff !important;
+  color: var(--gs-text) !important;
 }
 
 .sidebar .ant-menu-item-selected {
   background-color: #AE2448 !important;
-  color: #ffffff !important;
+  color: var(--gs-text) !important;
 }
 
 .sidebar .ant-menu-item .anticon {

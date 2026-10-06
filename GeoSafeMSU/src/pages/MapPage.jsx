@@ -46,12 +46,12 @@ function MapPage() {
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, flexWrap: 'wrap', gap: 12 }}>
-        <Title level={3} style={{ margin: 0, color: '#AE2448' }}>
+        <Title level={3} style={{ margin: 0 }}>
           <EnvironmentOutlined style={{ marginRight: 8 }} />
           Crime Map — MSU Main Campus
         </Title>
         <Space>
-          <span style={{ fontSize: 14, color: '#555' }}>
+          <span style={{ fontSize: 14 }}>
             Showing <strong>{incidents.length}</strong> incident{incidents.length !== 1 ? 's' : ''}
           </span>
           <span style={{ color: '#888' }}>|</span>

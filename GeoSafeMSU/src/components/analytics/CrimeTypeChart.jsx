@@ -1,4 +1,4 @@
-import { Card, Empty } from 'antd'
+import { Card, Empty, theme } from 'antd'
 import {
   PieChart, Pie, Cell, Sector, Tooltip, ResponsiveContainer,
 } from 'recharts'
@@ -71,6 +71,8 @@ function TypeTooltip({ active, payload }) {
 }
 
 function CrimeTypeChart({ incidents = [], crimeTypes = [] }) {
+  // Theme-aware colors: readable on both the light guest page and the dark system.
+  const { token } = theme.useToken()
   const rawData = crimeTypes.map((ct, i) => ({
     name: ct.typeName,
     value: incidents.filter(inc => inc.crimeTypeID === ct.crimeTypeID).length,
@@ -122,10 +124,10 @@ function CrimeTypeChart({ incidents = [], crimeTypes = [] }) {
               flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
               pointerEvents: 'none',
             }}>
-              <div style={{ fontSize: 32, fontWeight: 800, color: '#2C3E6B', lineHeight: 1 }}>
+              <div style={{ fontSize: 32, fontWeight: 800, color: token.colorTextHeading, lineHeight: 1 }}>
                 {total}
               </div>
-              <div style={{ fontSize: 11, color: '#888', letterSpacing: 0.5, marginTop: 2 }}>
+              <div style={{ fontSize: 11, color: token.colorTextSecondary, letterSpacing: 0.5, marginTop: 2 }}>
                 TOTAL
               </div>
             </div>
@@ -139,9 +141,9 @@ function CrimeTypeChart({ incidents = [], crimeTypes = [] }) {
             {data.map(d => (
               <span key={d.name} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12 }}>
                 <span style={{ width: 10, height: 10, borderRadius: '50%', background: d.color }} />
-                <span style={{ color: '#555' }}>{d.name}</span>
-                <strong style={{ color: '#2C3E6B' }}>{d.value}</strong>
-                <span style={{ color: '#AE2448', fontWeight: 600 }}>({d.pct}%)</span>
+                <span style={{ color: token.colorTextSecondary }}>{d.name}</span>
+                <strong style={{ color: token.colorTextHeading }}>{d.value}</strong>
+                <span style={{ color: token.colorPrimaryText, fontWeight: 600 }}>({d.pct}%)</span>
               </span>
             ))}
           </div>

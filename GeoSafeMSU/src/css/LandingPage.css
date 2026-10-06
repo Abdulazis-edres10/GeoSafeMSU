@@ -2,7 +2,7 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: #14234a;
+  background: #1A202C;
 }
 
 /* ── Header ─────────────────────────────────────────── */
@@ -14,10 +14,10 @@
   height: 80px;
   display: flex;
   align-items: center;
-  background: #7a1f3d;
+  background: #2D3748;
   backdrop-filter: blur(14px) saturate(160%);
   -webkit-backdrop-filter: blur(14px) saturate(160%);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(237, 242, 247, 0.08);
 }
 
 /* Animated accent line running across the very top of the header */
@@ -85,7 +85,7 @@
 .brand-title {
   display: flex;
   align-items: baseline;
-  color: #ffffff;
+  color: #EDF2F7;
   font-size: 19px;
   font-weight: 800;
   line-height: 1;
@@ -93,7 +93,7 @@
 }
 
 .brand-title-accent {
-  background: linear-gradient(90deg, #e0588a, #AE2448);
+  background: linear-gradient(90deg, #F09AB0, #E86A8A);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -101,7 +101,7 @@
 }
 
 .brand-sub {
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(237, 242, 247, 0.65);
   font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.2px;
@@ -199,7 +199,7 @@
 }
 
 .hero-title {
-  color: #ffffff;
+  color: #EDF2F7;
   font-size: 56px;
   font-weight: 800;
   line-height: 1.12;
@@ -208,11 +208,11 @@
 }
 
 .hero-title-accent {
-  color: #f07aa0;
+  color: #E86A8A;
 }
 
 .hero-desc {
-  color: rgba(255, 255, 255, 0.78);
+  color: rgba(237, 242, 247, 0.78);
   font-size: 17px;
   line-height: 1.7;
   margin: 0 auto 36px;
@@ -244,13 +244,13 @@
 
 /* ── Footer ──────────────────────────────────────────── */
 .landing-footer {
-  background: #7a1f3d;
+  background: #2D3748;
   padding: 16px 32px;
   text-align: center;
 }
 
 .landing-footer p {
-  color: rgba(255, 255, 255, 0.55);
+  color: rgba(237, 242, 247, 0.55);
   font-size: 12px;
   margin: 0;
 }

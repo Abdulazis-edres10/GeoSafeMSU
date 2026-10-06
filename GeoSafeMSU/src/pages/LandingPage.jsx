@@ -43,7 +43,7 @@ function LandingPage() {
             <Button
               type="primary"
               size="large"
-              style={{ background: '#7a1f3d', border: 'none', height: 48, paddingInline: 32 }}
+              style={{ background: '#AE2448', border: 'none', height: 48, paddingInline: 32 }}
               onClick={() => navigate('/login')}
             >
               Access System
@@ -51,7 +51,7 @@ function LandingPage() {
             <Button
               size="large"
               ghost
-              style={{ height: 48, paddingInline: 32, color: 'white', borderColor: 'rgba(255,255,255,0.5)' }}
+              style={{ height: 48, paddingInline: 32, color: '#EDF2F7', borderColor: 'rgba(237,242,247,0.5)' }}
               onClick={() => navigate('/guest')}
             >
               View as Guest

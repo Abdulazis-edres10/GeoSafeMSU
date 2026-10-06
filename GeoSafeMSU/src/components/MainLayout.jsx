@@ -1,7 +1,8 @@
-import { Breadcrumb, Button, Avatar, Tag } from 'antd'
+import { Breadcrumb, Button, Avatar, Tag, ConfigProvider } from 'antd'
 import { LogoutOutlined, UserOutlined } from '@ant-design/icons'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
+import { darkTheme } from '../theme'
 import Sidebar from './Sidebar'
 import '../css/MainLayout.css'
 
@@ -30,42 +31,44 @@ function MainLayout({ children }) {
   }
 
   return (
-    <div className="main-layout">
-      <Sidebar />
-      <div className="layout-body">
-        <div className="layout-topbar">
-          <div className="layout-topbar-left">
-            <Breadcrumb items={breadcrumbItems} />
-          </div>
-          <div className="layout-topbar-right">
-            {user && (
-              <div className="topbar-user">
-                <Avatar icon={<UserOutlined />} style={{ backgroundColor: '#AE2448' }} size={32} />
-                <div>
-                  <div className="topbar-user-name">{user.name}</div>
-                  <div className="topbar-user-role">
-                    <Tag color={ROLE_COLORS[user.role]} style={{ margin: 0, fontSize: 10 }}>
-                      {user.role}
-                    </Tag>
+    <ConfigProvider theme={darkTheme}>
+      <div className="main-layout">
+        <Sidebar />
+        <div className="layout-body">
+          <div className="layout-topbar">
+            <div className="layout-topbar-left">
+              <Breadcrumb items={breadcrumbItems} />
+            </div>
+            <div className="layout-topbar-right">
+              {user && (
+                <div className="topbar-user">
+                  <Avatar icon={<UserOutlined />} style={{ backgroundColor: '#AE2448' }} size={32} />
+                  <div>
+                    <div className="topbar-user-name">{user.name}</div>
+                    <div className="topbar-user-role">
+                      <Tag color={ROLE_COLORS[user.role]} style={{ margin: 0, fontSize: 10 }}>
+                        {user.role}
+                      </Tag>
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
-            <Button
-              icon={<LogoutOutlined />}
-              onClick={handleLogout}
-              size="small"
-              danger
-            >
-              Logout
-            </Button>
+              )}
+              <Button
+                icon={<LogoutOutlined />}
+                onClick={handleLogout}
+                size="small"
+                danger
+              >
+                Logout
+              </Button>
+            </div>
+          </div>
+          <div className="layout-content">
+            {children}
           </div>
         </div>
-        <div className="layout-content">
-          {children}
-        </div>
       </div>
-    </div>
+    </ConfigProvider>
   )
 }
 

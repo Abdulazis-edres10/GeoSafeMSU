@@ -1,4 +1,4 @@
-import { Button, Checkbox, Form, Input, Alert } from "antd";
+import { Button, Checkbox, Form, Input, Alert, ConfigProvider } from "antd";
 import {
   UserOutlined,
   LockOutlined,
@@ -8,6 +8,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import shield from "../assets/shieldWhite.png";
+import { darkTheme } from "../theme";
 import "../css/LoginPage.css";
 
 function LoginPage() {
@@ -54,104 +55,106 @@ function LoginPage() {
         </div>
 
         {/* Form panel */}
-        <div className="login-form-panel">
-          <div className="login-form-inner">
-            <h2 className="login-title">Welcome back</h2>
-            <p className="login-subtitle">
-              Sign in to access the GeoSafe MSU dashboard.
-            </p>
+        <ConfigProvider theme={darkTheme}>
+          <div className="login-form-panel">
+            <div className="login-form-inner">
+              <h2 className="login-title">Welcome back</h2>
+              <p className="login-subtitle">
+                Sign in to access the GeoSafe MSU dashboard.
+              </p>
 
-            {error && (
-              <Alert
-                message={error}
-                type="error"
-                showIcon
-                style={{ marginBottom: 20, textAlign: "left" }}
-                closable
-                onClose={() => setError(null)}
-              />
-            )}
-
-            <Form
-              name="login"
-              initialValues={{ remember: true }}
-              onFinish={onFinish}
-              autoComplete="off"
-              layout="vertical"
-              requiredMark={false}
-            >
-              <Form.Item
-                label="Username"
-                name="username"
-                rules={[
-                  { required: true, message: "Please enter your username." },
-                ]}
-              >
-                <Input
-                  prefix={<UserOutlined className="login-input-icon" />}
-                  placeholder="e.g. officer1"
-                  size="large"
+              {error && (
+                <Alert
+                  message={error}
+                  type="error"
+                  showIcon
+                  style={{ marginBottom: 20, textAlign: "left" }}
+                  closable
+                  onClose={() => setError(null)}
                 />
-              </Form.Item>
+              )}
 
-              <Form.Item
-                label="Password"
-                name="password"
-                rules={[
-                  { required: true, message: "Please enter your password." },
-                ]}
+              <Form
+                name="login"
+                initialValues={{ remember: true }}
+                onFinish={onFinish}
+                autoComplete="off"
+                layout="vertical"
+                requiredMark={false}
               >
-                <Input.Password
-                  prefix={<LockOutlined className="login-input-icon" />}
-                  placeholder="••••••••"
-                  size="large"
-                />
-              </Form.Item>
-
-              <div className="login-row">
-                <Form.Item name="remember" valuePropName="checked" noStyle>
-                  <Checkbox>Remember me</Checkbox>
+                <Form.Item
+                  label="Username"
+                  name="username"
+                  rules={[
+                    { required: true, message: "Please enter your username." },
+                  ]}
+                >
+                  <Input
+                    prefix={<UserOutlined className="login-input-icon" />}
+                    placeholder="e.g. officer1"
+                    size="large"
+                  />
                 </Form.Item>
-              </div>
 
-              <Form.Item style={{ marginBottom: 12 }}>
+                <Form.Item
+                  label="Password"
+                  name="password"
+                  rules={[
+                    { required: true, message: "Please enter your password." },
+                  ]}
+                >
+                  <Input.Password
+                    prefix={<LockOutlined className="login-input-icon" />}
+                    placeholder="••••••••"
+                    size="large"
+                  />
+                </Form.Item>
+
+                <div className="login-row">
+                  <Form.Item name="remember" valuePropName="checked" noStyle>
+                    <Checkbox>Remember me</Checkbox>
+                  </Form.Item>
+                </div>
+
+                <Form.Item style={{ marginBottom: 12 }}>
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    loading={loading}
+                    size="large"
+                    block
+                    className="login-submit-btn"
+                  >
+                    Sign In
+                  </Button>
+                </Form.Item>
+
                 <Button
-                  type="primary"
-                  htmlType="submit"
-                  loading={loading}
+                  type="text"
                   size="large"
                   block
-                  className="login-submit-btn"
+                  icon={<ArrowLeftOutlined />}
+                  onClick={() => navigate("/")}
+                  className="login-back-btn"
                 >
-                  Sign In
+                  Back to Home
                 </Button>
-              </Form.Item>
+              </Form>
 
-              <Button
-                type="text"
-                size="large"
-                block
-                icon={<ArrowLeftOutlined />}
-                onClick={() => navigate("/")}
-                className="login-back-btn"
-              >
-                Back to Home
-              </Button>
-            </Form>
-
-            {/* <div className="login-demo">
-              <span className="login-demo-label">Demo accounts</span>
-              <div className="login-demo-grid">
-                <span>
-                  <strong>Admin</strong> admin1 / admin123
-                </span>
-                <span>
-                  <strong>Officer</strong> officer1 / officer123
-                </span>
-              </div>
-            </div> */}
+              {/* <div className="login-demo">
+                <span className="login-demo-label">Demo accounts</span>
+                <div className="login-demo-grid">
+                  <span>
+                    <strong>Admin</strong> admin1 / admin123
+                  </span>
+                  <span>
+                    <strong>Officer</strong> officer1 / officer123
+                  </span>
+                </div>
+              </div> */}
+            </div>
           </div>
-        </div>
+        </ConfigProvider>
       </div>
     </div>
   );

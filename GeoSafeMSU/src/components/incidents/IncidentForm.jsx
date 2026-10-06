@@ -330,10 +330,10 @@ function IncidentForm({ initialValues = null, zones = [], crimeTypes = [], onSuc
       {personsState === 'ready' && (
         <Row gutter={16}>
           <Col xs={24} md={12}>
-            <PersonListSection form={form} listName="victims" title="Victims" accentColor="#1f4e9c" />
+            <PersonListSection form={form} listName="victims" title="Victims" accentColor="#63B3ED" />
           </Col>
           <Col xs={24} md={12}>
-            <PersonListSection form={form} listName="suspects" title="Suspects" accentColor="#AE2448" />
+            <PersonListSection form={form} listName="suspects" title="Suspects" accentColor="#E86A8A" />
           </Col>
         </Row>
       )}

@@ -1,7 +1,15 @@
+/* Mirrors PALETTE in src/theme.js — keep the two in sync. */
 .main-layout {
+  --gs-bg: #1A202C;
+  --gs-surface: #2D3748;
+  --gs-text: #EDF2F7;
+  --gs-text-muted: rgba(237, 242, 247, 0.65);
+  --gs-border: rgba(237, 242, 247, 0.08);
+
   display: flex;
   min-height: 100vh;
-  background-color: #F5F6FA;
+  background-color: var(--gs-bg);
+  color: var(--gs-text);
 }
 
 .layout-body {
@@ -14,13 +22,13 @@
 
 .layout-topbar {
   height: 56px;
-  background: white;
-  border-bottom: 1px solid #e5e4e7;
+  background: var(--gs-surface);
+  border-bottom: 1px solid var(--gs-border);
   padding: 0 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
   flex-shrink: 0;
 }
 
@@ -40,7 +48,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #333;
+  color: var(--gs-text);
   font-size: 14px;
 }
 
@@ -50,7 +58,7 @@
 
 .topbar-user-role {
   font-size: 12px;
-  color: #888;
+  color: var(--gs-text-muted);
   text-transform: capitalize;
 }
 

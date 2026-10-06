@@ -73,7 +73,7 @@ function DashboardPage() {
 
   return (
     <div className="dashboard-content">
-      <Title level={3} style={{ color: '#AE2448', marginBottom: 20 }}>
+      <Title level={3} style={{ marginBottom: 20 }}>
         <DashboardOutlined style={{ marginRight: 8 }} />
         Welcome back, {user?.name}
       </Title>
