@@ -7,7 +7,7 @@ import {
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import MapView from '../components/map/MapView'
-import { getIncidents } from '../services/api'
+import { getPublicIncidents, getCrimeTypes, getZones } from '../services/api'
 import { darkTheme } from '../theme'
 import shield from '../assets/shield.png'
 import '../css/GuestDashboard.css'
@@ -18,13 +18,19 @@ function GuestDashboard() {
   const { user } = useAuth()
   const navigate = useNavigate()
   const [incidents, setIncidents] = useState([])
+  const [crimeTypes, setCrimeTypes] = useState([])
+  const [zones, setZones] = useState([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    getIncidents().then(data => {
-      setIncidents(data)
-      setLoading(false)
-    })
+    getPublicIncidents()
+      .then(setIncidents)
+      .catch(() => {})
+      .finally(() => setLoading(false))
+    // Incidents only store IDs; the map needs these lists to show names.
+    // Both tables are public reference data, so guests may read them.
+    getCrimeTypes().then(setCrimeTypes).catch(() => {})
+    getZones().then(setZones).catch(() => {})
   }, [])
 
   const handleExit = () => {
@@ -78,7 +84,7 @@ function GuestDashboard() {
               <Title level={5} style={{ marginBottom: 12 }}>
                 Crime Heatmap — MSU Main Campus
               </Title>
-              <MapView incidents={incidents} showHeatmap={true} />
+              <MapView incidents={incidents} crimeTypes={crimeTypes} zones={zones} showHeatmap={true} />
             </div>
           )}
 

@@ -43,14 +43,22 @@ function IncidentMarker({ incident, users = [], zones = [], crimeTypes = [], onC
               {incident.incidentStatus}
             </Tag>
           </div>
-          <Divider style={{ margin: '6px 0' }} />
-          <div style={{ fontSize: 12, color: '#555', lineHeight: 1.5, marginBottom: 8 }}>
-            {incident.description}
-          </div>
-          <div>
-            <span style={{ color: '#888', fontSize: 11 }}>REPORTED BY</span><br />
-            <strong>{reporter?.name ?? 'Unknown'}</strong>
-          </div>
+          {/* Guests get incidents without description/officer, so hide these
+              sections instead of showing empty text and "Unknown". */}
+          {incident.reportingOfficer && (
+            <>
+              <Divider style={{ margin: '6px 0' }} />
+              {incident.description && (
+                <div style={{ fontSize: 12, color: '#555', lineHeight: 1.5, marginBottom: 8 }}>
+                  {incident.description}
+                </div>
+              )}
+              <div>
+                <span style={{ color: '#888', fontSize: 11 }}>REPORTED BY</span><br />
+                <strong>{reporter?.name ?? 'Unknown'}</strong>
+              </div>
+            </>
+          )}
         </div>
       </Popup>
     </Marker>

@@ -72,11 +72,12 @@ export function AuthProvider({ children }) {
   }, [])
 
   const login = async (username, password) => {
-    // Step 1: username → email lookup (the pre-auth read our RLS policy allows).
+    // Step 1: username → email lookup. Supabase Auth signs in by email, but users
+    // type a username. The user isn't logged in yet and `profiles` is closed to
+    // guests, so we call get_login_email(), which returns only the email and
+    // disabled flag for this one username.
     const { data: profile, error: lookupError } = await supabase
-      .from('profiles')
-      .select('email, disabled')
-      .eq('username', username)
+      .rpc('get_login_email', { p_username: username })
       .single()
 
     if (lookupError || !profile) {

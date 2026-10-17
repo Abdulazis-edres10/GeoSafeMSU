@@ -114,6 +114,15 @@ export async function getIncidents(filters = {}) {
   return data.map(toIncident)
 }
 
+// Guest-safe incidents for the public dashboard. Guests can't read the
+// incidents table; this database function returns only non-archived incidents
+// and only the "what, where, when" columns (no description, no officer).
+export async function getPublicIncidents() {
+  const { data, error } = await supabase.rpc('get_public_incidents')
+  if (error) throw error
+  return data.map(toIncident)
+}
+
 // POST /api/incidents
 export async function createIncident(data) {
   // Generate the next sequential ID (INC001, INC002, …) — same scheme as crime
