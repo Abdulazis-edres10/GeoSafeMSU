@@ -1,0 +1,65 @@
+/* Columns stretch to the tallest card in the row so all 4 cards match. */
+.stats-col {
+  display: flex;
+}
+
+.stat-card {
+  /* --accent is set per card from StatsSummary.jsx */
+  width: 100%;
+  min-height: 120px;
+  border-top: 3px solid var(--accent) !important;
+  cursor: default;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.stat-card .ant-card-body {
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.stat-card .ant-statistic {
+  width: 100%;
+}
+
+/* Long names (e.g. zone names) stay on one line instead of growing the card. */
+.stat-card .ant-statistic-content {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stat-card .stat-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  transition: transform 0.25s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--accent);
+  box-shadow:
+    0 10px 24px rgba(0, 0, 0, 0.15),
+    0 0 0 1px color-mix(in srgb, var(--accent) 40%, transparent);
+}
+
+.stat-card:hover .stat-icon {
+  transform: scale(1.15);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stat-card,
+  .stat-card .stat-icon {
+    transition: none;
+  }
+  .stat-card:hover,
+  .stat-card:hover .stat-icon {
+    transform: none;
+  }
+}

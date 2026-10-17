@@ -1,5 +1,6 @@
 import { Row, Col, Card, Statistic, theme } from 'antd'
 import { AlertOutlined, CalendarOutlined, TagOutlined, EnvironmentOutlined } from '@ant-design/icons'
+import '../../css/StatsSummary.css'
 
 function StatsSummary({ incidents = [], crimeTypes = [], zones = [] }) {
   // Theme-aware colors: readable on both the light guest page and the dark system.
@@ -54,17 +55,17 @@ function StatsSummary({ incidents = [], crimeTypes = [], zones = [] }) {
   return (
     <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
       {stats.map(({ title, value, icon, color, suffix }) => (
-        <Col xs={24} sm={12} lg={6} key={title}>
-          <Card bordered style={{ borderTop: `3px solid ${color}` }}>
+        <Col xs={24} sm={12} lg={6} key={title} className="stats-col">
+          <Card bordered className="stat-card" style={{ '--accent': color }}>
             <Statistic
               title={
-                <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  {icon} {title}
+                <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <span className="stat-icon">{icon}</span> {title}
                 </span>
               }
               value={value}
               suffix={suffix}
-              valueStyle={{ color, fontSize: typeof value === 'string' ? 16 : 28, fontWeight: 700 }}
+              valueStyle={{ color, fontSize: typeof value === 'string' ? 20 : 28, fontWeight: 700 }}
             />
           </Card>
         </Col>
