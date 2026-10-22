@@ -5,3 +5,72 @@
 .dashboard-content h2 {
   margin-bottom: 16px;
 }
+
+/* Welcome banner with the DSS headquarters signboard as background */
+.dashboard-hero {
+  position: relative;
+  overflow: hidden;
+  min-height: 250px;
+  margin-bottom: 24px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-size: cover;
+  background-position: center 55%;
+  display: flex;
+  align-items: center;
+}
+
+/* Dark navy fade: solid on the left so the text is readable, lighter on the right so the sign shows */
+.dashboard-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(15, 25, 60, 0.92) 0%,
+    rgba(15, 25, 60, 0.55) 35%,
+    rgba(15, 25, 60, 0.1) 70%
+  );
+}
+
+.dashboard-hero-text {
+  position: relative;
+  padding: 32px 40px;
+  max-width: 640px;
+}
+
+.dashboard-hero-tag {
+  display: inline-block;
+  padding: 4px 12px;
+  margin-bottom: 12px;
+  border-radius: 999px;
+  background: #e5252a;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.dashboard-hero-title {
+  margin: 0 0 6px;
+  color: #fff;
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.dashboard-hero-subtitle {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 15px;
+}
+
+@media (max-width: 768px) {
+  .dashboard-hero-text {
+    padding: 24px 20px;
+  }
+
+  .dashboard-hero-title {
+    font-size: 24px;
+  }
+}

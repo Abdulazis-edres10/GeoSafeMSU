@@ -1,13 +1,11 @@
 import { useState, useEffect } from 'react'
-import { Row, Col, Card, Table, Tag, Typography, Spin } from 'antd'
-import { DashboardOutlined } from '@ant-design/icons'
+import { Row, Col, Card, Table, Tag, Spin } from 'antd'
 import StatsSummary from '../components/analytics/StatsSummary'
 import MapView from '../components/map/MapView'
 import { getIncidents, getCrimeTypes, getZones, getUsers } from '../services/api'
 import { useAuth } from '../hooks/useAuth'
+import dssHeadquarters from '../assets/dss-headquarters.png'
 import '../css/Dashboard.css'
-
-const { Title } = Typography
 
 const STATUS_COLORS = {
   'Resolved': 'success',
@@ -73,10 +71,14 @@ function DashboardPage() {
 
   return (
     <div className="dashboard-content">
-      <Title level={3} style={{ marginBottom: 20 }}>
-        <DashboardOutlined style={{ marginRight: 8 }} />
-        Welcome back, {user?.name}
-      </Title>
+      <div className="dashboard-hero" style={{ backgroundImage: `url(${dssHeadquarters})` }}>
+        <div className="dashboard-hero-overlay" />
+        <div className="dashboard-hero-text">
+          <span className="dashboard-hero-tag">Department of Security Services</span>
+          <h1 className="dashboard-hero-title">Welcome back, {user?.name}</h1>
+          <p className="dashboard-hero-subtitle">Here's the latest on campus safety across MSU Marawi.</p>
+        </div>
+      </div>
 
       <StatsSummary incidents={incidents} crimeTypes={crimeTypes} zones={zones} />
 
