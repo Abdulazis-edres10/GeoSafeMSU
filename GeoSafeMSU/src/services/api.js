@@ -262,6 +262,58 @@ export async function saveIncidentPersons(incidentID, persons) {
 }
 
 // ---------------------------------------------------------------------------
+// Incident attachments (files under the victims / suspects lists)
+// ---------------------------------------------------------------------------
+
+// Private Storage bucket; files sit at <incidentID>/<role>/<timestamp>-<name>.
+const ATTACHMENTS_BUCKET = 'incident-attachments'
+
+// GET attachments for one side ('victim' | 'suspect') of an incident. The
+// bucket is private, so each file comes with a signed URL valid for an hour.
+export async function getIncidentAttachments(incidentID, role) {
+  const folder = `${incidentID}/${role}`
+  const bucket = supabase.storage.from(ATTACHMENTS_BUCKET)
+  const { data, error } = await bucket.list(folder, {
+    sortBy: { column: 'created_at', order: 'asc' },
+  })
+  if (error) throw error
+
+  const files = data.filter(f => f.id) // entries without an id are sub-folders
+  if (files.length === 0) return []
+  const paths = files.map(f => `${folder}/${f.name}`)
+  const { data: urls, error: urlErr } = await bucket.createSignedUrls(paths, 3600)
+  if (urlErr) throw urlErr
+
+  return files.map((f, i) => ({
+    path: paths[i],
+    name: f.name.replace(/^\d+-/, ''), // drop the timestamp prefix
+    size: f.metadata?.size ?? null,
+    mimeType: f.metadata?.mimetype ?? '',
+    uploadedAt: f.created_at,
+    url: urls[i].signedUrl,
+  }))
+}
+
+// POST one file. The timestamp prefix keeps same-named uploads from clashing;
+// characters Storage keys reject are replaced with "_".
+export async function uploadIncidentAttachment(incidentID, role, file) {
+  const safeName = file.name.replace(/[^\w.\-() ]/g, '_')
+  const path = `${incidentID}/${role}/${Date.now()}-${safeName}`
+  const { error } = await supabase.storage
+    .from(ATTACHMENTS_BUCKET)
+    .upload(path, file, { contentType: file.type || undefined })
+  if (error) throw error
+  return path
+}
+
+// DELETE one file by its storage path.
+export async function deleteIncidentAttachment(path) {
+  const { error } = await supabase.storage.from(ATTACHMENTS_BUCKET).remove([path])
+  if (error) throw error
+  return { success: true }
+}
+
+// ---------------------------------------------------------------------------
 // Users
 // ---------------------------------------------------------------------------
 

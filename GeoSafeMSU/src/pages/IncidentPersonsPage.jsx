@@ -9,6 +9,7 @@ import {
   getCrimeTypes,
   getZones,
 } from '../services/api'
+import AttachmentSection from '../components/incidents/AttachmentSection'
 
 const { Title, Text } = Typography
 
@@ -21,7 +22,7 @@ const STATUS_COLORS = {
 const VICTIM_COLOR = '#63B3ED'
 const SUSPECT_COLOR = '#E86A8A'
 
-function PersonCards({ title, persons, color }) {
+function PersonCards({ title, persons, color, incidentID, role }) {
   return (
     <Card
       title={<span style={{ color }}>{title} ({persons.length})</span>}
@@ -49,6 +50,8 @@ function PersonCards({ title, persons, color }) {
           ]}
         />
       ))}
+
+      <AttachmentSection incidentID={incidentID} role={role} accentColor={color} />
     </Card>
   )
 }
@@ -140,10 +143,10 @@ function IncidentPersonsPage() {
 
       <Row gutter={[16, 16]}>
         <Col xs={24} lg={12}>
-          <PersonCards title="Victims" persons={victims} color={VICTIM_COLOR} />
+          <PersonCards title="Victims" persons={victims} color={VICTIM_COLOR} incidentID={id} role="victim" />
         </Col>
         <Col xs={24} lg={12}>
-          <PersonCards title="Suspects" persons={suspects} color={SUSPECT_COLOR} />
+          <PersonCards title="Suspects" persons={suspects} color={SUSPECT_COLOR} incidentID={id} role="suspect" />
         </Col>
       </Row>
     </div>
