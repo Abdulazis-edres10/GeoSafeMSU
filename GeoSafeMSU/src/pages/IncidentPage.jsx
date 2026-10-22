@@ -79,7 +79,7 @@ function IncidentPage() {
         open={modalOpen}
         onCancel={() => setModalOpen(false)}
         footer={null}
-        width={620}
+        width={860}
         destroyOnClose
       >
         <IncidentForm

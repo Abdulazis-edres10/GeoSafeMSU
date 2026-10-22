@@ -5,6 +5,7 @@ import { useAuth } from '../../hooks/useAuth'
 import { createIncident, updateIncident } from '../../services/api'
 import { CRIME_TYPES, ZONES } from '../../data/mockData'
 import LocationPicker from '../map/LocationPicker'
+import VictimsSuspectsSection from './VictimsSuspectsSection'
 import { findZoneForPoint, pointInPolygon } from '../../utils/geo'
 
 const STATUS_OPTIONS = [
@@ -51,6 +52,10 @@ function IncidentForm({ initialValues = null, onSuccess, onCancel }) {
       form.setFieldsValue({
         dateTime: dayjs(),
         incidentStatus: 'Pending',
+        victims: [],
+        suspects: [],
+        victimAttachments: [],
+        suspectAttachments: [],
         lat: MSU_CENTER.lat,
         lng: MSU_CENTER.lng,
         ...(defaultZone ? { locationID: defaultZone.locationID } : {}),
@@ -206,6 +211,8 @@ function IncidentForm({ initialValues = null, onSuccess, onCancel }) {
       >
         <Input.TextArea rows={4} placeholder="Describe the incident in detail…" />
       </Form.Item>
+
+      <VictimsSuspectsSection />
 
       <Form.Item label="Reporting Officer" name="reportingOfficer">
         <Input disabled defaultValue={user?.name} placeholder={user?.name} />
