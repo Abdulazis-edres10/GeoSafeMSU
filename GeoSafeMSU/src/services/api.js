@@ -114,6 +114,18 @@ export async function getIncidents(filters = {}) {
   return data.map(toIncident)
 }
 
+// GET /api/incidents/:id — one incident (active or archived). Returns null if
+// it doesn't exist.
+export async function getIncidentById(id) {
+  const { data, error } = await supabase
+    .from('incidents')
+    .select('*')
+    .eq('incident_id', id)
+    .maybeSingle()
+  if (error) throw error
+  return data ? toIncident(data) : null
+}
+
 // Guest-safe incidents for the public dashboard. Guests can't read the
 // incidents table; this database function returns only non-archived incidents
 // and only the "what, where, when" columns (no description, no officer).

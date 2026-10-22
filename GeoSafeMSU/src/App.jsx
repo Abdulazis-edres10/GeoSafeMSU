@@ -9,6 +9,7 @@ import LoginPage from './pages/LoginPage'
 import DashboardPage from './pages/DashboardPage'
 import MapPage from './pages/MapPage'
 import IncidentPage from './pages/IncidentPage'
+import IncidentPersonsPage from './pages/IncidentPersonsPage'
 import Analytics from './pages/Analytics'
 import AdminPage from './pages/AdminPage'
 import CampusZonesPage from './pages/CampusZonesPage'
@@ -87,6 +88,14 @@ function App() {
         element={
           <ProtectedRoute allowedRoles={['admin', 'officer']}>
             <MainLayout><IncidentPage /></MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/incidents/:id/persons"
+        element={
+          <ProtectedRoute allowedRoles={['admin', 'officer']}>
+            <MainLayout><IncidentPersonsPage /></MainLayout>
           </ProtectedRoute>
         }
       />

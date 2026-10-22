@@ -1,7 +1,7 @@
-import { Table, Input, Tag, Button, Popconfirm, Space, Row, Col, Descriptions } from 'antd'
-import { EditOutlined, InboxOutlined, UndoOutlined, SearchOutlined } from '@ant-design/icons'
+import { Table, Input, Tag, Button, Popconfirm, Space } from 'antd'
+import { EditOutlined, InboxOutlined, UndoOutlined, SearchOutlined, TeamOutlined } from '@ant-design/icons'
 import { useState } from 'react'
-import dayjs from 'dayjs'
+import { useNavigate } from 'react-router-dom'
 
 const STATUS_COLORS = {
   'Resolved': 'success',
@@ -23,38 +23,9 @@ function PersonNames({ persons, color }) {
   )
 }
 
-function PersonDetails({ title, persons, color }) {
-  return (
-    <div>
-      <div style={{ fontWeight: 600, color, marginBottom: 8 }}>{title} ({persons.length})</div>
-      {persons.length === 0 && <div style={{ color: '#888', fontSize: 12 }}>None recorded.</div>}
-      {persons.map(p => (
-        <Descriptions
-          key={p.personID}
-          size="small"
-          bordered
-          column={2}
-          style={{ marginBottom: 12, borderLeft: `3px solid ${color}` }}
-          title={<span style={{ fontSize: 13 }}>{p.fullName}</span>}
-          items={[
-            { key: 'age', label: 'Age', children: p.age ?? '—' },
-            { key: 'gender', label: 'Gender', children: p.gender ?? '—' },
-            {
-              key: 'birthdate',
-              label: 'Birthdate',
-              children: p.birthdate ? dayjs(p.birthdate).format('MMM D, YYYY') : '—',
-            },
-            { key: 'civilStatus', label: 'Civil Status', children: p.civilStatus ?? '—' },
-            { key: 'address', label: 'Address', span: 2, children: p.address ?? '—' },
-          ]}
-        />
-      ))}
-    </div>
-  )
-}
-
 function IncidentTable({ incidents = [], crimeTypes = [], zones = [], users = [], personsByIncident = {}, onEdit, onArchive, onRestore, archivedView = false, loading = false }) {
   const [search, setSearch] = useState('')
+  const navigate = useNavigate()
 
   const officerName = id => users.find(u => u.userID === id)?.name ?? '—'
   const personsOf = (incidentID, role) =>
@@ -151,20 +122,34 @@ function IncidentTable({ incidents = [], crimeTypes = [], zones = [], users = []
     {
       title: 'Actions',
       key: 'actions',
-      width: 110,
+      width: 230,
       fixed: 'right',
-      render: (_, record) => (
-        archivedView ? (
-          <Popconfirm
-            title="Restore incident?"
-            description="It will move back to the active records."
-            onConfirm={() => onRestore?.(record.incidentID)}
-            okText="Restore"
+      render: (_, record) => {
+        const viewPersons = (
+          <Button
+            icon={<TeamOutlined />}
+            size="small"
+            onClick={() => navigate(`/incidents/${record.incidentID}/persons`)}
+            title="View victims & suspects"
           >
-            <Button icon={<UndoOutlined />} size="small" title="Restore">Restore</Button>
-          </Popconfirm>
+            Persons
+          </Button>
+        )
+        return archivedView ? (
+          <Space>
+            {viewPersons}
+            <Popconfirm
+              title="Restore incident?"
+              description="It will move back to the active records."
+              onConfirm={() => onRestore?.(record.incidentID)}
+              okText="Restore"
+            >
+              <Button icon={<UndoOutlined />} size="small" title="Restore">Restore</Button>
+            </Popconfirm>
+          </Space>
         ) : (
           <Space>
+            {viewPersons}
             <Button
               icon={<EditOutlined />}
               size="small"
@@ -181,7 +166,7 @@ function IncidentTable({ incidents = [], crimeTypes = [], zones = [], users = []
             </Popconfirm>
           </Space>
         )
-      ),
+      },
     },
   ]
 
@@ -200,21 +185,8 @@ function IncidentTable({ incidents = [], crimeTypes = [], zones = [], users = []
         columns={columns}
         dataSource={filtered}
         loading={loading}
-        expandable={{
-          rowExpandable: record => (personsByIncident[record.incidentID] ?? []).length > 0,
-          expandedRowRender: record => (
-            <Row gutter={16}>
-              <Col xs={24} md={12}>
-                <PersonDetails title="Victims" persons={personsOf(record.incidentID, 'victim')} color={VICTIM_COLOR} />
-              </Col>
-              <Col xs={24} md={12}>
-                <PersonDetails title="Suspects" persons={personsOf(record.incidentID, 'suspect')} color={SUSPECT_COLOR} />
-              </Col>
-            </Row>
-          ),
-        }}
         pagination={{ pageSize: 10, showSizeChanger: true, showTotal: total => `${total} records` }}
-        scroll={{ x: 1220 }}
+        scroll={{ x: 1340 }}
         size="middle"
         bordered
       />
