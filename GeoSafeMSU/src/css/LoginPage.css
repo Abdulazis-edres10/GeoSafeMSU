@@ -215,3 +215,42 @@
     padding: 36px 28px;
   }
 }
+
+/* ----- Entrance transition ----- */
+/* Plays every time the login page mounts (e.g. clicking "Access System"). */
+.login-card,
+.login-brand-content,
+.login-form-inner {
+  opacity: 0;
+  animation-duration: 0.7s;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  animation-fill-mode: forwards;
+}
+
+.login-card          { animation-name: login-card-in; }
+.login-brand-content { animation-name: login-slide-right; animation-delay: 0.2s; }
+.login-form-inner    { animation-name: login-slide-left;  animation-delay: 0.32s; }
+
+@keyframes login-card-in {
+  from { opacity: 0; transform: translateY(24px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes login-slide-right {
+  from { opacity: 0; transform: translateX(-28px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes login-slide-left {
+  from { opacity: 0; transform: translateX(28px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login-card,
+  .login-brand-content,
+  .login-form-inner {
+    opacity: 1;
+    animation: none;
+  }
+}
